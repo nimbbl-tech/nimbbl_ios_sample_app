@@ -1,0 +1,31 @@
+# Production Podfile for Nimbbl iOS SDK
+# This is how users should configure their Podfile when using the published SDK
+
+# Uncomment the next line to define a global platform for your project
+platform :ios, '13.0'
+
+target 'YourAppName' do
+  # Use dynamic frameworks for production SDK usage
+  use_frameworks!
+
+  # Pods for YourAppName
+  # Add webview SDK for complete checkout experience (recommended)
+  # The webview SDK automatically includes the core API SDK as a dependency
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 1.0.0'
+  
+  # OR use core API SDK only if you need custom implementation
+  # pod 'nimbbl_mobile_kit_ios_core_api_sdk', '~> 1.0.0'
+
+end
+
+# Note: For production apps, you should handle code signing according to your app's requirements.
+# The post_install block above is typically only needed for development/testing scenarios.
+# 
+# If you encounter code signing issues, you may need to add:
+# post_install do |installer|
+#   installer.pods_project.targets.each do |target|
+#     target.build_configurations.each do |config|
+#       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+#     end
+#   end
+# end
