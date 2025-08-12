@@ -5,7 +5,6 @@ Copyright (c) 2025 Bigital Technologies Pvt. Ltd. All rights reserved.
 
 import Foundation
 import nimbbl_mobile_kit_ios_webview_sdk
-import nimbbl_mobile_kit_ios_core_api_sdk
 import UIKit
 
 // MARK: - Payment Data Models
@@ -197,7 +196,7 @@ class PaymentManager {
         // Only pass user object to API if it exists in request body
         let userDict: [String: Any]? = requestBody["user"] as? [String: Any]
         
-        NimbblCoreApiSDK.shared.createShopOrder(
+        NimbblCheckoutSDK.shared.createShopOrder(
             currency: currency,
             amount: amount,
             productId: productId,

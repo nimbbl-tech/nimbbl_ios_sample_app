@@ -5,7 +5,6 @@ Copyright (c) 2025 Bigital Technologies Pvt. Ltd. All rights reserved.
 
 import UIKit
 import nimbbl_mobile_kit_ios_webview_sdk
-import nimbbl_mobile_kit_ios_core_api_sdk
 
 class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
      let paymentManager = PaymentManager.shared
@@ -909,8 +908,8 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 
                 // Extract API error message if available
                 var errorMessage = error.localizedDescription
-                if let nsError = error as? NSError,
-                   let apiError = nsError.userInfo["error"] as? [String: Any],
+                let nsError = error as NSError
+                if let apiError = nsError.userInfo["error"] as? [String: Any],
                    let errorDetails = apiError["error"] as? [String: Any],
                    let consumerMessage = errorDetails["nimbbl_consumer_message"] as? String {
                     errorMessage = consumerMessage
