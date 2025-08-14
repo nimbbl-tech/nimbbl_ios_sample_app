@@ -1,0 +1,20 @@
+PODS:
+  - nimbbl_mobile_kit_ios_core_api_sdk (1.5.9)
+  - nimbbl_mobile_kit_ios_webview_sdk (1.0.12):
+    - nimbbl_mobile_kit_ios_core_api_sdk (~> 1.5.9)
+
+DEPENDENCIES:
+  - nimbbl_mobile_kit_ios_webview_sdk (~> 1.0.12)
+
+SPEC REPOS:
+  trunk:
+    - nimbbl_mobile_kit_ios_core_api_sdk
+    - nimbbl_mobile_kit_ios_webview_sdk
+
+SPEC CHECKSUMS:
+  nimbbl_mobile_kit_ios_core_api_sdk: 439b9a69d8112e1ee55fa0969e2d08c26388c22a
+  nimbbl_mobile_kit_ios_webview_sdk: e03e32395e483574cadd6cef108e9d842a3bdf0a
+
+PODFILE CHECKSUM: b7ed705410ae321ff7a06503f497713536f0ce16
+
+COCOAPODS: 1.16.2
