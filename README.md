@@ -1,6 +1,6 @@
-# Nimbbl iOS Sample App
+# Nimbbl iOS Sample App v2.0.0
 
-A complete sample iOS application demonstrating the integration of Nimbbl payment services using both the Core API SDK and WebView SDK.
+A complete sample iOS application demonstrating the integration of Nimbbl payment services using both the Core API SDK v2.0.0 and WebView SDK v2.0.0. This major release showcases enhanced features, improved error handling, and better developer experience.
 
 ## 📱 Overview
 
@@ -31,12 +31,14 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with Core API SDK
-- ✅ Integration with WebView SDK
-- ✅ Delegate-based callbacks
-- ✅ Error handling and logging
+- ✅ Integration with Core API SDK v2.0.0
+- ✅ Integration with WebView SDK v2.0.0
+- ✅ Enhanced delegate-based callbacks
+- ✅ Standardized error handling and logging
 - ✅ Build scripts for development
 - ✅ Production-ready configuration
+- ✅ Major version synchronization
+- ✅ Enhanced security and data handling
 
 ## 📋 Requirements
 
@@ -171,15 +173,15 @@ let prodUrl = "https://api.nimbbl.tech"
 The sample app demonstrates integration with both SDKs:
 
 ```swift
-// Core API SDK Integration
+// Core API SDK v2.0.0 Integration
 import nimbbl_mobile_kit_ios_core_api_sdk
 
 let sdk = NimbblCoreApiSDK.shared
 sdk.updateOrderDetails(token: orderToken, orderId: orderId) { result in
-    // Handle response
+    // Handle response with enhanced error handling
 }
 
-// WebView SDK Integration
+// WebView SDK v2.0.0 Integration
 import nimbbl_mobile_kit_ios_webview_sdk
 
 NimbblCheckoutSDK.shared.delegate = self

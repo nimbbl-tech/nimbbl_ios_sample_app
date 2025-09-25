@@ -7,17 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06A024682E4DBD10003CA9F3 /* nimbbl_mobile_kit_ios_webview_sdk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A024622E4DBCE9003CA9F3 /* nimbbl_mobile_kit_ios_webview_sdk.xcframework */; };
-		6633150DDBB530702C362D30 /* Pods_NimbblSampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3671146B290287F4E532227A /* Pods_NimbblSampleApp.framework */; };
+		9F2E58943C8A990E9A857F2E /* Pods_NimbblSampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0E006038F16880E47EC1097 /* Pods_NimbblSampleApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		06A024622E4DBCE9003CA9F3 /* nimbbl_mobile_kit_ios_webview_sdk.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = nimbbl_mobile_kit_ios_webview_sdk.xcframework; path = Pods/nimbbl_mobile_kit_ios_webview_sdk/nimbbl_mobile_kit_ios_webview_sdk.xcframework; sourceTree = "<group>"; };
 		06A024642E4DBCF6003CA9F3 /* nimbbl_mobile_kit_ios_core_api_sdk.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = nimbbl_mobile_kit_ios_core_api_sdk.xcframework; path = Pods/nimbbl_mobile_kit_ios_core_api_sdk/nimbbl_mobile_kit_ios_core_api_sdk.xcframework; sourceTree = "<group>"; };
 		06B5AA702E49BC180013F69D /* NimbblSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NimbblSampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3671146B290287F4E532227A /* Pods_NimbblSampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NimbblSampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CEDDB90F4675F2D11C4547FB /* Pods-NimbblSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NimbblSampleApp.release.xcconfig"; path = "Target Support Files/Pods-NimbblSampleApp/Pods-NimbblSampleApp.release.xcconfig"; sourceTree = "<group>"; };
-		F909FE7450E19C4D88B8E935 /* Pods-NimbblSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NimbblSampleApp.debug.xcconfig"; path = "Target Support Files/Pods-NimbblSampleApp/Pods-NimbblSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		71C0112CD3EBB567CD78039A /* Pods-NimbblSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NimbblSampleApp.release.xcconfig"; path = "Target Support Files/Pods-NimbblSampleApp/Pods-NimbblSampleApp.release.xcconfig"; sourceTree = "<group>"; };
+		B0E006038F16880E47EC1097 /* Pods_NimbblSampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NimbblSampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E25D8C7648232D3AA90A3225 /* Pods-NimbblSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NimbblSampleApp.debug.xcconfig"; path = "Target Support Files/Pods-NimbblSampleApp/Pods-NimbblSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,8 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06A024682E4DBD10003CA9F3 /* nimbbl_mobile_kit_ios_webview_sdk.xcframework in Frameworks */,
-				6633150DDBB530702C362D30 /* Pods_NimbblSampleApp.framework in Frameworks */,
+				9F2E58943C8A990E9A857F2E /* Pods_NimbblSampleApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +75,7 @@
 			children = (
 				06A024642E4DBCF6003CA9F3 /* nimbbl_mobile_kit_ios_core_api_sdk.xcframework */,
 				06A024622E4DBCE9003CA9F3 /* nimbbl_mobile_kit_ios_webview_sdk.xcframework */,
-				3671146B290287F4E532227A /* Pods_NimbblSampleApp.framework */,
+				B0E006038F16880E47EC1097 /* Pods_NimbblSampleApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -85,8 +83,8 @@
 		AB8E91BB64AC8B3B8B570B49 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F909FE7450E19C4D88B8E935 /* Pods-NimbblSampleApp.debug.xcconfig */,
-				CEDDB90F4675F2D11C4547FB /* Pods-NimbblSampleApp.release.xcconfig */,
+				E25D8C7648232D3AA90A3225 /* Pods-NimbblSampleApp.debug.xcconfig */,
+				71C0112CD3EBB567CD78039A /* Pods-NimbblSampleApp.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -98,11 +96,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 06B5AA832E49BC180013F69D /* Build configuration list for PBXNativeTarget "NimbblSampleApp" */;
 			buildPhases = (
-				2781B0617CF5BC213772F993 /* [CP] Check Pods Manifest.lock */,
+				40CB76924C1CBC1761847B4E /* [CP] Check Pods Manifest.lock */,
 				06B5AA6C2E49BC180013F69D /* Sources */,
 				06B5AA6D2E49BC180013F69D /* Frameworks */,
 				06B5AA6E2E49BC180013F69D /* Resources */,
-				2F268BBFE8D3097E0973646F /* [CP] Embed Pods Frameworks */,
+				5E2FBC330E35D118B182460F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -161,7 +159,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2781B0617CF5BC213772F993 /* [CP] Check Pods Manifest.lock */ = {
+		40CB76924C1CBC1761847B4E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -183,7 +181,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2F268BBFE8D3097E0973646F /* [CP] Embed Pods Frameworks */ = {
+		5E2FBC330E35D118B182460F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -215,7 +213,7 @@
 /* Begin XCBuildConfiguration section */
 		06B5AA842E49BC180013F69D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F909FE7450E19C4D88B8E935 /* Pods-NimbblSampleApp.debug.xcconfig */;
+			baseConfigurationReference = E25D8C7648232D3AA90A3225 /* Pods-NimbblSampleApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -254,7 +252,7 @@
 		};
 		06B5AA852E49BC180013F69D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CEDDB90F4675F2D11C4547FB /* Pods-NimbblSampleApp.release.xcconfig */;
+			baseConfigurationReference = 71C0112CD3EBB567CD78039A /* Pods-NimbblSampleApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

@@ -130,35 +130,4 @@ class UserDetailsManager {
         return emailPredicate.evaluate(with: email)
     }
     
-    // MARK: - Clear Data
-    func clearUserDetails() {
-        name = ""
-        number = ""
-        email = ""
-        
-        nameTextField?.text = ""
-        numberTextField?.text = ""
-        emailTextField?.text = ""
-    }
-    
-    // MARK: - Get User Details for API
-    func getUserDetailsForAPI() -> [String: String]? {
-        guard isEnabled else { return nil }
-        
-        return [
-            "first_name": name.trimmingCharacters(in: .whitespacesAndNewlines),
-            "mobile_number": number.trimmingCharacters(in: .whitespacesAndNewlines),
-            "email": email.trimmingCharacters(in: .whitespacesAndNewlines)
-        ]
-    }
-    
-    // MARK: - Debug Info
-    func getDebugInfo() -> String {
-        return """
-        User Details Enabled: \(isEnabled)
-        Name: \(name)
-        Number: \(number)
-        Email: \(email)
-        """
-    }
 } 

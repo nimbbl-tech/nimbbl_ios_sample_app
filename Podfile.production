@@ -11,10 +11,10 @@ target 'YourAppName' do
   # Pods for YourAppName
   # Add webview SDK for complete checkout experience (recommended)
   # The webview SDK automatically includes the core API SDK as a dependency
-  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 1.0.0'
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 1.0.13'
   
   # OR use core API SDK only if you need custom implementation
-  # pod 'nimbbl_mobile_kit_ios_core_api_sdk', '~> 1.0.0'
+  # pod 'nimbbl_mobile_kit_ios_core_api_sdk', '~> 1.5.10'
 
 end
 
