@@ -149,7 +149,6 @@ NimbblSampleApp/
 │   │   └── ThankYouVC.swift
 │   └── ViewController.swift
 ├── Podfile
-├── Podfile.production
 ├── build_without_sandbox.sh
 └── clean_project.rb
 ```

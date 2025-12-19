@@ -15,6 +15,6 @@ SPEC CHECKSUMS:
   nimbbl_mobile_kit_ios_core_api_sdk: 16d757964b7cc873eb5fdc012e747d88a811186f
   nimbbl_mobile_kit_ios_webview_sdk: 22907fdfb5d7bf2a216eb6b53ce4ab028f494bdd
 
-PODFILE CHECKSUM: fb79c7bddf6d6dfa5c1e591c8a61cd78b9b752b1
+PODFILE CHECKSUM: acd8d7c2140d495536de73b9cd64c1481fffb7fe
 
 COCOAPODS: 1.16.2
