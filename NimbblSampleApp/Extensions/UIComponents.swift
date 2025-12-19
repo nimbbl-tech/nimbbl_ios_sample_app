@@ -7,24 +7,6 @@ import UIKit
 
 // MARK: - UI Component Extensions
 extension UIButton {
-    func configurePaymentButton() {
-        self.backgroundColor = .white
-        self.layer.cornerRadius = 10
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
-        self.setTitleColor(.black, for: .normal)
-        self.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
-        self.isUserInteractionEnabled = true
-    }
-    
-    func configurePayNowButton() {
-        self.setTitle(TextConstants.payNow, for: .normal)
-        self.setTitleColor(.white, for: .normal)
-        self.titleLabel?.font = UIFont.gorditaMedium(size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .medium)
-        self.backgroundColor = .black
-        self.layer.cornerRadius = 12
-        self.isUserInteractionEnabled = true
-    }
 }
 
 extension UITextField {
@@ -39,32 +21,9 @@ extension UITextField {
         self.isUserInteractionEnabled = true
     }
     
-    func configureAmountTextField() {
-        self.font = UIFont.preferredFont(forTextStyle: .title3)
-        self.textColor = .black
-        self.keyboardType = .decimalPad
-        self.textAlignment = .center
-        self.attributedPlaceholder = NSAttributedString(
-            string: "4.0",
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
-        )
-    }
 }
 
 extension UILabel {
-    func configureTitleLabel() {
-        self.font = UIFont.gorditaBold(size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
-        self.textColor = .black
-    }
-    
-    func configureInfoLabel() {
-        self.font = UIFont.gorditaItalic(size: 12) ?? UIFont.italicSystemFont(ofSize: 12)
-    }
-    
-    func configureSectionLabel() {
-        self.font = UIFont.gorditaMedium(size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        self.textColor = .black
-    }
 }
 
 // MARK: - UI Constants

@@ -844,6 +844,20 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         if DebugConfig.debugPrintEnabled {
             print("[DEBUG] Validation passed")
         }
+        
+        // Check app mode to determine which SDK to use
+        let appMode = UserDefaults.standard.string(forKey: "SAMPLE_APP_MODE") ?? "Webview"
+        
+        if appMode == "Native" {
+            // Native SDK flow - SDK not available
+            showAlert(title: "Native SDK", message: "Native SDK is not available in this build")
+        } else {
+            // Use WebView SDK (existing flow)
+            startWebViewPayment()
+        }
+    }
+    
+    private func startWebViewPayment() {
         payNowButton.isEnabled = false
         // Set environment URL in webview SDK before order creation
         let env = UserDefaults.standard.selectedEnvironment
@@ -897,6 +911,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                     print("[DEBUG] Checkout options: \(options)")
                     print("Selected header: \(self?.paymentManager.selectedHeader ?? .brandName), Product ID: \(self?.paymentManager.getProductIdForHeader() ?? "")")
                 }
+                
                 // Use delegate-based checkout
                 DispatchQueue.main.async {
                     NimbblCheckoutSDK.shared.checkout(from: self!, options: options)
@@ -1154,70 +1169,37 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
     
     // MARK: - NimbblCheckoutSDKDelegate
-    func onPaymentSuccess(_ response: [AnyHashable : Any]) {
-        print("[SAMPLE APP] 🎉 Payment success received with response: \(response)")
+    func onCheckoutResponse(data: [AnyHashable: Any]) {
+        print("[SAMPLE APP] Checkout response received: \(data)")
         
-        // Extract orderId and trxId from response if available
-        let orderId = response["order_id"] as? String ?? response["nimbbl_order_id"] as? String ?? ""
-        let trxId = response["transaction_id"] as? String ?? response["nimbbl_transaction_id"] as? String ?? ""
-        
-        print("[SAMPLE APP] 📋 Extracted Order ID: \(orderId)")
-        print("[SAMPLE APP] 📋 Extracted Transaction ID: \(trxId)")
-        
+
         // Dismiss any presented view controllers (e.g., checkout webview)
         if let presented = self.presentedViewController {
-            print("[SAMPLE APP] 🔄 Dismissing presented view controller")
+            print("[SAMPLE APP] Dismissing presented view controller")
             presented.dismiss(animated: false) {
-                print("[SAMPLE APP] ✅ Presented view controller dismissed, showing ThankYou page")
-                self.showThankYouVC(orderId: orderId, trxId: trxId, isSuccess: true)
+                print("[SAMPLE APP] Presented view controller dismissed, showing ThankYou page")
+                self.showThankYouVC(data: data)
             }
         } else {
-            print("[SAMPLE APP] ✅ No presented view controller, showing ThankYou page directly")
-            self.showThankYouVC(orderId: orderId, trxId: trxId, isSuccess: true)
-        }
-    }
-    func onError(_ error: [AnyHashable: Any]) {
-        print("[SAMPLE APP] ❌ Payment error received: \(error)")
-        
-        // Extract information from error dictionary
-        let errorMessage = error["error"] as? String ?? "Payment failed"
-        let orderId = error["order_id"] as? String ?? error["nimbbl_order_id"] as? String ?? ""
-        let transactionId = error["transaction_id"] as? String ?? error["nimbbl_transaction_id"] as? String ?? ""
-        let token = error["token"] as? String ?? ""
-        let subMerchantId = error["subMerchantId"] as? String ?? ""
-        let status = error["status"] as? String ?? "failed"
-        
-        print("[SAMPLE APP] 📋 Extracted Order ID: \(orderId)")
-        print("[SAMPLE APP] 📋 Extracted Transaction ID: \(transactionId)")
-        print("[SAMPLE APP] 📋 Extracted Token: \(token)")
-        print("[SAMPLE APP] 📋 Extracted Sub Merchant ID: \(subMerchantId)")
-        print("[SAMPLE APP] 📋 Status: \(status)")
-        
-        // Navigate to ThankYou page even for failed payments
-        if let presented = self.presentedViewController {
-            print("[SAMPLE APP] 🔄 Dismissing presented view controller for failed payment")
-            presented.dismiss(animated: false) {
-                print("[SAMPLE APP] ✅ Presented view controller dismissed, showing ThankYou page for failed payment")
-                self.showThankYouVC(orderId: orderId, trxId: transactionId, isSuccess: false, errorMessage: errorMessage)
-            }
-        } else {
-            print("[SAMPLE APP] ✅ No presented view controller, showing ThankYou page directly for failed payment")
-            self.showThankYouVC(orderId: orderId, trxId: transactionId, isSuccess: false, errorMessage: errorMessage)
+            print("[SAMPLE APP] No presented view controller, showing ThankYou page directly")
+            self.showThankYouVC(data: data)
         }
     }
     
-    private func showThankYouVC(orderId: String, trxId: String, isSuccess: Bool = true, errorMessage: String = "") {
-        print("[SAMPLE APP] 🎯 Creating ThankYou page with Order ID: \(orderId), Transaction ID: \(trxId), Success: \(isSuccess)")
+    private func showThankYouVC(data: [AnyHashable: Any]) {
         let thankYouVC = ThankYouVC()
-        thankYouVC.orderid = orderId
-        thankYouVC.trxId = trxId
-        thankYouVC.isSuccess = isSuccess
-        thankYouVC.errorMessage = errorMessage
+        
+        // Pass the data directly to ThankYouVC
+        thankYouVC.paymentData = data
+        print("[SAMPLE APP] Data passed to ThankYouVC: \(data)")
+        
         thankYouVC.modalPresentationStyle = .fullScreen
         self.present(thankYouVC, animated: true) {
-            print("[SAMPLE APP] ✅ ThankYou page presented successfully")
+            print("[SAMPLE APP] ThankYou page presented successfully")
         }
     }
+    
+
 
 } // End of ViewController class
 

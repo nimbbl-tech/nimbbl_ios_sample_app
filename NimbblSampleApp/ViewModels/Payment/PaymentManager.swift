@@ -255,39 +255,6 @@ class PaymentManager {
         return selectedSubPaymentOption?.name.lowercased()
     }
     
-    // Helper to get bank code (matches Flutter mapping)
-    func getBankCode() -> String? {
-        guard let subOption = selectedSubPaymentOption else { return nil }
-        switch subOption.name.lowercased() {
-        case "all banks":
-            return ""
-        case "hdfc bank":
-            return "hdfc"
-        case "sbi bank":
-            return "sbi"
-        case "kotak bank":
-            return "kotak"
-        default:
-            return ""
-        }
-    }
-
-    // Helper to get wallet code (matches Flutter mapping)
-    func getWalletCode() -> String? {
-        guard let subOption = selectedSubPaymentOption else { return nil }
-        switch subOption.name.lowercased() {
-        case "all wallets":
-            return ""
-        case "freecharge":
-            return "freecharge"
-        case "jio money":
-            return "jio_money"
-        case "phonepe":
-            return "phonepe"
-        default:
-            return ""
-        }
-    }
 
     // Helper to get payment flow (matches Flutter mapping)
     func getPaymentFlow(upiModeName: String) -> String {
@@ -357,28 +324,4 @@ class PaymentManager {
         return true
     }
     
-    // MARK: - Debug Information
-    func getDebugInfo() -> String {
-        var info = """
-        === PAYMENT DEBUG INFO ===
-        User Details Enabled: \(userDetailsEnabled)
-        Name: \(userName)
-        Number: \(userNumber)
-        Email: \(userEmail)
-        Amount: \(amountValue)
-        Currency: \(selectedCurrency)
-        Payment Option: \(selectedPaymentOption?.name ?? "None")
-        Sub Payment Option: \(selectedSubPaymentOption?.name ?? "None")
-        Header Option: \(selectedHeader.displayName)
-        Personalised Options: \(isPersonalisedOptionsEnabled)
-        """
-        
-        // Add environment and experience info
-        let environment = UserDefaults.standard.selectedEnvironment
-        let experience = UserDefaults.standard.selectedExperience
-        info += "\nEnvironment: \(environment)"
-        info += "\nExperience: \(experience)"
-        
-        return info
-    }
 } 
