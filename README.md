@@ -298,21 +298,13 @@ xcodebuild -workspace NimbblSampleApp.xcworkspace \
 
 This sample app is provided as-is for demonstration purposes. See the [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
 ## 📞 Support
 
 For support and questions:
 
-- **Email**: support@nimbbl.com
-- **Website**: https://nimbbl.com
-- **Documentation**: [Nimbbl Developer Docs](https://docs.nimbbl.com)
+- **Email**: support@nimbbl.biz
+- **Website**: https://nimbbl.biz
+- **Documentation**: [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
 
 ---
 

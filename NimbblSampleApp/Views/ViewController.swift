@@ -911,6 +911,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                     print("[DEBUG] Checkout options: \(options)")
                     print("Selected header: \(self?.paymentManager.selectedHeader ?? .brandName), Product ID: \(self?.paymentManager.getProductIdForHeader() ?? "")")
                 }
+                
                 // Use delegate-based checkout
                 DispatchQueue.main.async {
                     NimbblCheckoutSDK.shared.checkout(from: self!, options: options)
@@ -1169,18 +1170,18 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     
     // MARK: - NimbblCheckoutSDKDelegate
     func onCheckoutResponse(data: [AnyHashable: Any]) {
-        print("[SAMPLE APP] 🎯 Checkout response received: \(data)")
+        print("[SAMPLE APP] Checkout response received: \(data)")
         
 
         // Dismiss any presented view controllers (e.g., checkout webview)
         if let presented = self.presentedViewController {
-            print("[SAMPLE APP] 🔄 Dismissing presented view controller")
+            print("[SAMPLE APP] Dismissing presented view controller")
             presented.dismiss(animated: false) {
-                print("[SAMPLE APP] ✅ Presented view controller dismissed, showing ThankYou page")
+                print("[SAMPLE APP] Presented view controller dismissed, showing ThankYou page")
                 self.showThankYouVC(data: data)
             }
         } else {
-            print("[SAMPLE APP] ✅ No presented view controller, showing ThankYou page directly")
+            print("[SAMPLE APP] No presented view controller, showing ThankYou page directly")
             self.showThankYouVC(data: data)
         }
     }
@@ -1190,11 +1191,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         
         // Pass the data directly to ThankYouVC
         thankYouVC.paymentData = data
-        print("[SAMPLE APP] 📊 Data passed to ThankYouVC: \(data)")
+        print("[SAMPLE APP] Data passed to ThankYouVC: \(data)")
         
         thankYouVC.modalPresentationStyle = .fullScreen
         self.present(thankYouVC, animated: true) {
-            print("[SAMPLE APP] ✅ ThankYou page presented successfully")
+            print("[SAMPLE APP] ThankYou page presented successfully")
         }
     }
     
