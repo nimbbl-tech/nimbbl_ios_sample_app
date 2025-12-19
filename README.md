@@ -31,13 +31,13 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with Core API SDK v2.0.0
-- ✅ Integration with WebView SDK v2.0.0
+- ✅ Integration with Core API SDK v2.0.15 (published)
+- ✅ Integration with WebView SDK v2.0.16 (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
 - ✅ Build scripts for development
 - ✅ Production-ready configuration
-- ✅ Major version synchronization
+- ✅ Published SDKs from CocoaPods
 - ✅ Enhanced security and data handling
 
 ## 📋 Requirements
@@ -46,6 +46,15 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - **Xcode**: 12.0+
 - **Swift**: 5.0+
 - **CocoaPods**: Latest version
+
+## 📦 SDK Versions
+
+This sample app uses the following published SDK versions from CocoaPods:
+
+- **WebView SDK**: 2.0.16
+- **Core API SDK**: 2.0.15 (automatically included as a dependency)
+
+To update to a different version, modify the version in `Podfile` and run `pod install`.
 
 ## �� Installation
 
@@ -56,25 +65,19 @@ git clone https://github.com/nimbbl-tech/nimbbl_ios_sample_app.git
 cd nimbbl_ios_sample_app
 ```
 
-### 2. Install Dependencies
+### 2. Install CocoaPods Dependencies
 
-The sample app uses local SDK dependencies. Make sure you have the following repositories cloned in the same directory:
-
-```bash
-# Clone Core API SDK
-git clone https://bitbucket.org/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_sdk.git
-
-# Clone WebView SDK
-git clone https://bitbucket.org/nimbbl-tech/nimbbl_mobile_kit_ios_webview_sdk.git
-```
-
-### 3. Install CocoaPods Dependencies
+The sample app uses published SDKs from CocoaPods. Simply run:
 
 ```bash
 pod install
 ```
 
-### 4. Open the Project
+This will automatically install:
+- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.16)
+- `nimbbl_mobile_kit_ios_core_api_sdk` (2.0.15) - automatically included as a dependency
+
+### 3. Open the Project
 
 ```bash
 open NimbblSampleApp.xcworkspace
@@ -244,18 +247,18 @@ LogUtil.errorLog(tag: "SampleApp", message: "Error occurred")
 
 ## 📚 Documentation
 
-- [Core API SDK Documentation](../nimbbl_mobile_kit_ios_core_api_sdk/README.md)
-- [WebView SDK Documentation](../nimbbl_mobile_kit_ios_webview_sdk/README.md)
-- [Code Organization](NimbblSampleApp/Supporting/CODE_ORGANIZATION.md)
+- [Core API SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_sdk)
+- [WebView SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_sdk)
+- [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
 1. **Build Errors**
-   - Ensure all SDK repositories are cloned
-   - Run `pod install` to install dependencies
+   - Run `pod install` to install dependencies from CocoaPods
    - Clean build folder (⌘+Shift+K)
+   - Ensure you're opening `NimbblSampleApp.xcworkspace` (not `.xcodeproj`)
 
 2. **Runtime Errors**
    - Check network connectivity
