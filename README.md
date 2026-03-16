@@ -172,47 +172,6 @@ options.orderToken = "your_order_token"
 NimbblCheckoutSDK.shared.checkout(from: self, options: options)
 ```
 
-## 🎨 Customization
-
-### UI Customization
-
-The sample app includes various customization options:
-
-- **Header Options**: Customize checkout header appearance
-- **Payment Options**: Configure available payment methods
-- **Amount & Currency**: Set payment amount and currency
-- **User Details**: Collect customer information
-
-### Payment Flow Customization
-
-```swift
-// Customize checkout options
-let options = NimbblCheckoutOptions()
-options.orderToken = orderToken
-options.amount = amount
-options.currency = currency
-options.customerName = customerName
-options.customerEmail = customerEmail
-options.customerPhone = customerPhone
-
-// Start checkout
-NimbblCheckoutSDK.shared.checkout(from: self, options: options)
-```
-
-## 🔍 Debugging
-
-### Logging
-
-The sample app includes comprehensive logging:
-
-```swift
-// Enable debug logging
-LogUtil.debugLog(tag: "SampleApp", message: "Debug message")
-
-// Error logging
-LogUtil.errorLog(tag: "SampleApp", message: "Error occurred")
-```
-
 ## 📚 Documentation
 
 - [Core API SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_sdk)
