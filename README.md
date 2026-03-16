@@ -87,78 +87,79 @@ open NimbblSampleApp.xcworkspace
 2. **Select your target device** (iPhone Simulator or physical device)
 3. **Build and run** the project (⌘+R)
 
-### Sample App Features
+## 🔧 Integrating the WebView SDK in Your App
 
-#### 1. Payment Configuration
-- **Amount**: Set payment amount (default: ₹100)
-- **Currency**: Select currency (INR, USD, etc.)
-- **Payment Options**: Customize payment methods
-- **Header Options**: Customize checkout header
+Below is a minimal end‑to‑end example of how to add and use the `nimbbl_mobile_kit_ios_webview_sdk` in your own iOS app.
 
-#### 2. User Details
-- **Name**: Customer name
-- **Phone**: Contact number
-- **Email**: Email address
-- **Toggle**: Enable/disable user details collection
+### 1. Add the Pod
 
-#### 3. Payment Flow
-1. **Configure payment** settings
-2. **Tap "Pay Now"** to start checkout
-3. **Complete payment** in the WebView interface
-4. **View results** (success/error)
+In your app’s `Podfile`:
 
-#### 4. Settings
-- **Environment URL**: Configure API endpoints
-- **QA Environment**: Switch between environments
+```ruby
+platform :ios, '13.0'
+use_frameworks!
 
-## 📁 Project Structure
-
-```
-nimbbl_ios_sample_app/
-├── NimbblSampleApp/
-│   ├── App/
-│   │   ├── AppDelegate.swift
-│   │   ├── LaunchScreen.storyboard
-│   │   └── NimbblCheckout-Bridging-Header.h
-│   ├── Extensions/
-│   │   ├── UIColor+Hex.swift
-│   │   ├── UIComponents.swift
-│   │   └── ViewController+UITextFieldDelegate.swift
-│   ├── Models/
-│   │   ├── IconWithName.swift
-│   │   └── ImageWithName.swift
-│   ├── Resources/
-│   │   └── Assets.xcassets/
-│   ├── Supporting/
-│   │   ├── AppConstants.swift
-│   │   └── Config.swift
-│   ├── ViewModels/
-│   │   ├── Payment/
-│   │   │   └── PaymentManager.swift
-│   │   └── User/
-│   │       └── UserDetailsManager.swift
-│   ├── Views/
-│   │   ├── Payment/
-│   │   │   ├── HeaderOptionsBottomSheetViewController.swift
-│   │   │   ├── PaymentOptionsBottomSheetViewController.swift
-│   │   │   └── SubPaymentOptionsBottomSheetViewController.swift
-│   │   ├── Settings/
-│   │   │   └── SettingsViewController.swift
-│   │   ├── ThankYou/
-│   │   │   └── ThankYouVC.swift
-│   │   └── ViewController.swift
-│   ├── Info.plist
-│   └── README.md
-├── Podfile
-└── README.md
+target 'YourAppName' do
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 2.0.17'
+end
 ```
 
-## 🔧 Configuration
+Then run:
 
-For detailed WebView SDK configuration and integration steps, see the full integration guide in `NimbblSampleApp/README.md`:
+```bash
+pod install
+open YourAppName.xcworkspace
+```
 
-- **File**: `NimbblSampleApp/README.md`
-- **Title**: “Nimbbl iOS WebView SDK Integration Guide”
-- **Contents**: Installation via CocoaPods, import steps, Swift/Objective‑C usage examples, Info.plist `LSApplicationQueriesSchemes` configuration, order token generation, troubleshooting, and API parameter reference.
+### 2. Import and Initialize
 
-This top-level README focuses on the sample app overview and project structure; refer to the integration guide above when you integrate the SDK into your own app.
+In the view controller from which you want to start checkout:
+
+```swift
+import nimbbl_mobile_kit_ios_webview_sdk
+
+class MyViewController: UIViewController, NimbblCheckoutSDKDelegate {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        NimbblCheckoutSDK.shared.delegate = self
+    }
+
+    func startCheckout(with orderToken: String) {
+        let options = NimbblCheckoutOptions(orderToken: orderToken, paymentModeCode: nil, bankCode: nil, walletCode: nil, paymentFlow: nil)
+        NimbblCheckoutSDK.shared.checkout(from: self, options: options)
+    }
+
+    // MARK: - NimbblCheckoutSDKDelegate
+    func onPaymentSuccess(_ response: [AnyHashable : Any]) {
+        // Handle success
+    }
+
+    func onError(_ error: String) {
+        // Handle error
+    }
+}
+```
+
+### 3. Configure UPI/Wallet URL Schemes
+
+Add the following under the root `<dict>` in your app’s `Info.plist` to allow UPI/wallet app detection:
+
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>credpay</string>
+    <string>gpay</string>
+    <string>mobikwik</string>
+    <string>phonepe</string>
+    <string>paytmmp</string>
+    <string>navipay</string>
+    <string>super</string>
+    <string>popclubapp</string>
+    <string>amazonpay</string>
+    <string>kotak811</string>
+    <string>bhim</string>
+    <string>jupiter</string>
+</array>
+```
+
+With these three steps (Podfile, import/usage, and `Info.plist` schemes), you have a working WebView SDK integration similar to what this sample app uses.
