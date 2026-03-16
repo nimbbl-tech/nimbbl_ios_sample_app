@@ -130,12 +130,8 @@ class MyViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
 
     // MARK: - NimbblCheckoutSDKDelegate
-    func onPaymentSuccess(_ response: [AnyHashable : Any]) {
-        // Handle success
-    }
-
-    func onError(_ error: String) {
-        // Handle error
+    func onCheckoutResponse(data: [AnyHashable: Any]) {
+        // Handle checkout response (success, failure, cancel, etc.)
     }
 }
 ```
