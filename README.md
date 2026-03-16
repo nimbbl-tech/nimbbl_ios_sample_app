@@ -158,83 +158,10 @@ nimbbl_ios_sample_app/
 
 ## 🔧 Configuration
 
-### SDK Integration
+For detailed WebView SDK configuration and integration steps, see the full integration guide in `NimbblSampleApp/README.md`:
 
-The sample app demonstrates integration with the WebView SDK (which includes the Core API SDK as a dependency):
+- **File**: `NimbblSampleApp/README.md`
+- **Title**: “Nimbbl iOS WebView SDK Integration Guide”
+- **Contents**: Installation via CocoaPods, import steps, Swift/Objective‑C usage examples, Info.plist `LSApplicationQueriesSchemes` configuration, order token generation, troubleshooting, and API parameter reference.
 
-```swift
-// WebView SDK Integration (v2.0.17)
-import nimbbl_mobile_kit_ios_webview_sdk
-
-NimbblCheckoutSDK.shared.delegate = self
-let options = NimbblCheckoutOptions()
-options.orderToken = "your_order_token"
-NimbblCheckoutSDK.shared.checkout(from: self, options: options)
-```
-
-## 📚 Documentation
-
-- [Core API SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_sdk)
-- [WebView SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_sdk)
-- [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Build Errors**
-   - Run `pod install` to install dependencies from CocoaPods
-   - Clean build folder (⌘+Shift+K)
-   - Ensure you're opening `NimbblSampleApp.xcworkspace` (not `.xcodeproj`)
-
-2. **Runtime Errors**
-   - Check network connectivity
-   - Verify API endpoints in settings
-   - Check console logs for error messages
-
-3. **Payment Issues**
-   - Verify order token is valid
-   - Check payment amount and currency
-   - Ensure proper delegate implementation
-
-### Getting Help
-
-- **Documentation**: Check the SDK documentation
-- **Issues**: Report issues on GitHub
-- **Support**: Contact support@nimbbl.com
-
-## 🚀 Production Deployment
-
-### Before Production
-
-1. **Update API endpoints** to production URLs
-2. **Configure code signing** for App Store distribution
-3. **Test thoroughly** on physical devices
-4. **Review security** settings and configurations
-
-### Build Configuration
-
-```bash
-# Production build
-xcodebuild -workspace NimbblSampleApp.xcworkspace \
-           -scheme NimbblSampleApp \
-           -configuration Release \
-           -destination 'generic/platform=iOS' \
-           archive
-```
-
-## 📄 License
-
-This sample app is provided as-is for demonstration purposes. See the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-For support and questions:
-
-- **Email**: support@nimbbl.biz
-- **Website**: https://nimbbl.biz
-- **Documentation**: [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
-
----
-
-**Happy Coding! 🎉**
+This top-level README focuses on the sample app overview and project structure; refer to the integration guide above when you integrate the SDK into your own app.
