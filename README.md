@@ -31,8 +31,8 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with Core API SDK v2.0.15 (published)
-- ✅ Integration with WebView SDK v2.0.16 (published)
+- ✅ Integration with Core API SDK v2.0.17 (published)
+- ✅ Integration with WebView SDK v2.0.17 (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
 - ✅ Production-ready configuration
@@ -50,8 +50,8 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 
 This sample app uses the following published SDK versions from CocoaPods:
 
-- **WebView SDK**: 2.0.16
-- **Core API SDK**: 2.0.15 (automatically included as a dependency)
+- **WebView SDK**: 2.0.17
+- **Core API SDK**: 2.0.17 (automatically included as a dependency)
 
 To update to a different version, modify the version in `Podfile` and run `pod install`.
 
@@ -73,8 +73,8 @@ pod install
 ```
 
 This will automatically install:
-- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.16)
-- `nimbbl_mobile_kit_ios_core_api_sdk` (2.0.15) - automatically included as a dependency
+- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.17)
+- `nimbbl_mobile_kit_ios_core_api_sdk` (2.0.17) - automatically included as a dependency
 
 ### 3. Open the Project
 
@@ -153,7 +153,6 @@ nimbbl_ios_sample_app/
 │   ├── Info.plist
 │   └── README.md
 ├── Podfile
-├── Podfile.lock
 └── README.md
 ```
 
@@ -164,7 +163,7 @@ nimbbl_ios_sample_app/
 The sample app demonstrates integration with the WebView SDK (which includes the Core API SDK as a dependency):
 
 ```swift
-// WebView SDK Integration (v2.0.16)
+// WebView SDK Integration (v2.0.17)
 import nimbbl_mobile_kit_ios_webview_sdk
 
 NimbblCheckoutSDK.shared.delegate = self

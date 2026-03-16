@@ -17,15 +17,20 @@ Welcome to the Nimbbl iOS WebView SDK! This guide will help you integrate Nimbbl
 
 Add the following to your app's `Podfile`:
 
-```
-pod 'nimbbl_mobile_kit_ios_webview_sdk', :git => 'https://github.com/yourorg/nimbbl_mobile_kit_ios_webview_sdk.git', :tag => '1.0.0'
+```ruby
+platform :ios, '13.0'
+use_frameworks!
+
+target 'YourAppName' do
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 2.0.17'
+end
 ```
 
 > **Note:** You do **not** need to add the Core API SDK separately. It is included automatically as a dependency.
 
 Then run:
 
-```
+```bash
 pod install
 ```
 
@@ -136,40 +141,18 @@ To enable UPI and wallet app detection and deep linking, you **must** add the fo
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
-    <string>Bandhan</string>
-    <string>BHIM</string>
-    <string>CanaraMobility</string>
-    <string>CentUPI</string>
-    <string>com.amazon.mobile.shopping</string>
-    <string>com.ausmallfinancebank.aupay.bhimupi</string>
-    <string>com.jkbank.bhimjkbankupi</string>
-    <string>com.rbl.rblimplicitjourney</string>
-    <string>com.syndicate.syndupi</string>
-    <string>com.vijayabank.UPI</string>
-    <string>cred</string>
-    <string>dbin</string>
-    <string>freecharge</string>
+    <string>credpay</string>
     <string>gpay</string>
-    <string>hdfcnewbb</string>
-    <string>imobileapp</string>
-    <string>in.cointab.app</string>
-    <string>in.fampay.app</string>
-    <string>kvb.app.upiapp</string>
-    <string>lotza</string>
     <string>mobikwik</string>
-    <string>money.bullet</string>
-    <string>myairtel</string>
-    <string>myJio</string>
-    <string>paytm</string>
-    <string>payzapp</string>
     <string>phonepe</string>
-    <string>truecaller</string>
-    <string>ucoupi</string>
-    <string>upi</string>
-    <string>upibillpay</string>
-    <string>whatsapp</string>
-    <string>www.citruspay.com</string>
     <string>paytmmp</string>
+    <string>navipay</string>
+    <string>super</string>
+    <string>popclubapp</string>
+    <string>amazonpay</string>
+    <string>kotak811</string>
+    <string>bhim</string>
+    <string>jupiter</string>
 </array>
 ```
 
@@ -318,7 +301,7 @@ Before going live, ensure:
 
 ## 8. Support
 
-For help, contact the Nimbbl support team at [support@nimbbl.tech](mailto:support@nimbbl.tech).
+For help, contact the Nimbbl support team at [support@nimbbl.biz](mailto:support@nimbbl.biz).
 
 ### Additional Resources
 - [Nimbbl API Documentation](https://docs.nimbbl.tech)
