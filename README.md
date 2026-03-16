@@ -7,7 +7,7 @@ A complete sample iOS application demonstrating the integration of Nimbbl paymen
 This sample app showcases how to integrate Nimbbl payment services into your iOS application. It demonstrates:
 
 - **Complete payment checkout flow**
-- **Integration with WebView SDK (includes Core API SDK)**
+- **Integration with WebView SDK**
 - **Modern UI with payment customization options**
 - **Error handling and user feedback**
 - **Settings and configuration management**
@@ -31,7 +31,6 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with Core API SDK v2.0.17 (published)
 - ✅ Integration with WebView SDK v2.0.17 (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
@@ -48,10 +47,9 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 
 ## 📦 SDK Versions
 
-This sample app uses the following published SDK versions from CocoaPods:
+This sample app uses the following published SDK version from CocoaPods:
 
 - **WebView SDK**: 2.0.17
-- **Core API SDK**: 2.0.17 (automatically included as a dependency)
 
 To update to a different version, modify the version in `Podfile` and run `pod install`.
 
@@ -74,7 +72,6 @@ pod install
 
 This will automatically install:
 - `nimbbl_mobile_kit_ios_webview_sdk` (2.0.17)
-- `nimbbl_mobile_kit_ios_core_api_sdk` (2.0.17) - automatically included as a dependency
 
 ### 3. Open the Project
 
