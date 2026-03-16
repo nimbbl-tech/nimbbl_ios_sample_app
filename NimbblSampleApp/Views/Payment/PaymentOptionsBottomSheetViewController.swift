@@ -32,6 +32,7 @@ class PaymentOptionsBottomSheetViewController: UIViewController, UITableViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemBackground
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(PaymentOptionCell.self, forCellReuseIdentifier: TextConstants.paymentOptionCell)
@@ -56,14 +57,14 @@ class PaymentOptionsBottomSheetViewController: UIViewController, UITableViewDele
         let option = options[indexPath.row]
         if let icon = option.icon {
             cell.iconView.image = icon.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
-            cell.iconView.tintColor = .black
+            cell.iconView.tintColor = .label
         } else {
             cell.iconView.image = nil
         }
         cell.titleLabel.text = PaymentManager.shared.displayName(for: PaymentOption(icon: option.icon, name: option.name, code: option.name))
         cell.accessoryType = (option.name == selectedOption) ? .checkmark : .none
-        // Set checkmark color to black if selected, else default
-        cell.tintColor = (option.name == selectedOption) ? .black : .gray
+        cell.tintColor = (option.name == selectedOption) ? .label : .secondaryLabel
+        cell.backgroundColor = .systemBackground
         return cell
     }
     
@@ -80,11 +81,14 @@ class PaymentOptionCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .systemBackground
+        contentView.backgroundColor = .systemBackground
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.contentMode = .scaleAspectFit
         contentView.addSubview(iconView)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
+        titleLabel.textColor = .label
         contentView.addSubview(titleLabel)
         NSLayoutConstraint.activate([
             iconView.widthAnchor.constraint(equalToConstant: 20),

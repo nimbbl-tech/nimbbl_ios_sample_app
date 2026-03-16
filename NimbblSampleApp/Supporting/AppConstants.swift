@@ -5,13 +5,9 @@ Copyright (c) 2025 Bigital Technologies Pvt. Ltd. All rights reserved.
 
 import UIKit
 
-// MARK: - API Constants
-// Note: APIConstants is defined in the nimbbl_mobile_kit_ios_core_api_sdk framework
-// This section is for reference only - the actual implementation is in the SDK
-
-// MARK: - API Utils
-// Note: APIUtils is defined in the nimbbl_mobile_kit_ios_core_api_sdk framework
-// This section is for reference only - the actual implementation is in the SDK
+// MARK: - API Notes
+// The sample app intentionally avoids importing the Core API SDK directly.
+// Environment resolution / shop-order URL building is handled locally where needed (e.g. `PaymentManager`).
 
 // MARK: - Image Names
 struct ImageNames {

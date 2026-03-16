@@ -1,6 +1,7 @@
 # Xcode
 xcuserdata/
 Pods/
+.Podfile.lock
 .DS_Store
 build/
 DerivedData/

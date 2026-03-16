@@ -48,6 +48,7 @@ class HeaderOptionsBottomSheetViewController: UIViewController, UITableViewDeleg
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        tableView.backgroundColor = .systemBackground
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -58,6 +59,13 @@ class HeaderOptionsBottomSheetViewController: UIViewController, UITableViewDeleg
         let cell = tableView.dequeueReusableCell(withIdentifier: TextConstants.headerOptionCell, for: indexPath) as! HeaderOptionCell
         let option = options[indexPath.row]
         cell.titleLabel.text = option
+        
+        if option == selectedOption {
+            cell.titleLabel.textColor = .label
+        } else {
+            cell.titleLabel.textColor = .label
+        }
+        
         cell.titleLabel.font = UIFont(name: FontNames.gorditaMedium, size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
         // Set indicator color to match button logic
         if option == TextConstants.brandNameAndLogo {
@@ -69,8 +77,8 @@ class HeaderOptionsBottomSheetViewController: UIViewController, UITableViewDeleg
         }
         cell.accessoryType = (option == selectedOption) ? UITableViewCell.AccessoryType.checkmark : UITableViewCell.AccessoryType.none
         // Set checkmark color to black if selected, else default
-        cell.tintColor = (option == selectedOption) ? UIColor.black : UIColor.gray
-        cell.backgroundColor = UIColor.white
+        cell.tintColor = (option == selectedOption) ? .label : .secondaryLabel
+        cell.backgroundColor = .systemBackground
         return cell
     }
     
@@ -107,11 +115,12 @@ class HeaderOptionCell: UITableViewCell {
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
         ])
-        self.backgroundColor = .white
-        contentView.backgroundColor = .white
+        self.backgroundColor = .systemBackground
+        contentView.backgroundColor = .systemBackground
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 } 
+

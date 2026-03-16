@@ -32,6 +32,7 @@ class SubPaymentOptionsBottomSheetViewController: UIViewController, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        tableView.backgroundColor = .systemBackground
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(SubPaymentOptionCell.self, forCellReuseIdentifier: TextConstants.subPaymentOptionCell)
@@ -54,11 +55,16 @@ class SubPaymentOptionsBottomSheetViewController: UIViewController, UITableViewD
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TextConstants.subPaymentOptionCell, for: indexPath) as! SubPaymentOptionCell
         let option = options[indexPath.row]
-        cell.iconView.image = UIImage(named: option.imageName)
+        if let img = UIImage(named: option.imageName) {
+            cell.iconView.image = img.withRenderingMode(.alwaysTemplate)
+        } else {
+            cell.iconView.image = nil
+        }
+        cell.iconView.tintColor = .label
         cell.titleLabel.text = PaymentManager.shared.displayName(for: SubPaymentOption(imageName: option.imageName, name: option.name, code: option.name))
         cell.accessoryType = (option.name == selectedOption) ? .checkmark : .none
-        cell.tintColor = (option.name == selectedOption) ? .black : .gray
-        cell.backgroundColor = .white
+        cell.tintColor = (option.name == selectedOption) ? .label : .secondaryLabel
+        cell.backgroundColor = .systemBackground
         return cell
     }
     
@@ -90,8 +96,9 @@ class SubPaymentOptionCell: UITableViewCell {
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
         ])
-        self.backgroundColor = .white
-        contentView.backgroundColor = .white
+        self.backgroundColor = .systemBackground
+        contentView.backgroundColor = .systemBackground
+        titleLabel.textColor = .label
     }
     
     required init?(coder: NSCoder) {
