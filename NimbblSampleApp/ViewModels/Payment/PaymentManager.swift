@@ -192,42 +192,63 @@ class PaymentManager {
         if DebugConfig.debugPrintEnabled {
             print("[DEBUG] createShopOrder request body (iOS): \(requestBody)")
         }
-        
-        // Only pass user object to API if it exists in request body
-        let userDict: [String: Any]? = requestBody["user"] as? [String: Any]
-        
-        NimbblCheckoutSDK.shared.createShopOrder(
-            currency: currency,
-            amount: amount,
-            productId: productId,
-            orderLineItems: orderLineItems,
-            checkoutExperience: checkoutExperience,
-            paymentMode: paymentMode,
-            subPaymentMode: subPaymentMode,
-            user: userDict
-        ) { result in
-            switch result {
-            case .success(let json):
-                if let token = json["token"] as? String {
-                    completion(.success(token))
-                } else {
-                    completion(.failure(NSError(domain: "No token in response", code: 0, userInfo: nil)))
-                }
-            case .failure(let error):
-                completion(.failure(error))
-            }
+
+        createShopOrder(requestBody: requestBody, completion: completion)
+    }
+
+    /// Creates a shop order via the create-shop API (moved from SDK to sample app).
+    private func createShopOrder(requestBody: [String: Any], completion: @escaping (Result<String, Error>) -> Void) {
+        let urlString = SampleShopAPIUtils.getShopUrl(environmentUrl: NimbblCheckoutSDK.shared.environmentUrl)
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid shop URL", code: 0, userInfo: nil)))
+            return
         }
+        guard let body = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            completion(.failure(NSError(domain: "Invalid order data", code: 0, userInfo: nil)))
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(error)) }
+                return
+            }
+            guard let data = data else {
+                DispatchQueue.main.async { completion(.failure(NSError(domain: "No data received", code: 0, userInfo: nil))) }
+                return
+            }
+            do {
+                let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                if let token = json?["token"] as? String {
+                    DispatchQueue.main.async { completion(.success(token)) }
+                } else if let errorPayload = json?["error"] {
+                    DispatchQueue.main.async {
+                        completion(.failure(NSError(domain: "Order error", code: 0, userInfo: ["error": errorPayload])))
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async { completion(.failure(error)) }
+            }
+        }.resume()
     }
 
     // Helper to get productId based on header selection
     func getProductIdForHeader() -> String {
         switch selectedHeader {
         case .brandNameAndLogo:
-            return "11"
+            return "1"
         case .brandLogo:
-            return "12"
+            return "2"
         case .brandName:
-            return "13"
+            return "3"
         }
     }
 

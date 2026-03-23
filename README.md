@@ -1,13 +1,13 @@
-# Nimbbl iOS Sample App v2.0.0
+# Nimbbl iOS Sample App
 
-A complete sample iOS application demonstrating the integration of Nimbbl payment services using both the Core API SDK v2.0.0 and WebView SDK v2.0.0. This major release showcases enhanced features, improved error handling, and better developer experience.
+A complete sample iOS application demonstrating the integration of Nimbbl payment services using the published WebView SDK from CocoaPods. This sample app showcases payment integration, modern UI, and best practices for iOS development.
 
 ## 📱 Overview
 
 This sample app showcases how to integrate Nimbbl payment services into your iOS application. It demonstrates:
 
 - **Complete payment checkout flow**
-- **Integration with both Core API SDK and WebView SDK**
+- **Integration with WebView SDK**
 - **Modern UI with payment customization options**
 - **Error handling and user feedback**
 - **Settings and configuration management**
@@ -31,11 +31,9 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with Core API SDK v2.0.15 (published)
-- ✅ Integration with WebView SDK v2.0.16 (published)
+- ✅ Integration with WebView SDK v2.0.17 (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
-- ✅ Build scripts for development
 - ✅ Production-ready configuration
 - ✅ Published SDKs from CocoaPods
 - ✅ Enhanced security and data handling
@@ -49,10 +47,9 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 
 ## 📦 SDK Versions
 
-This sample app uses the following published SDK versions from CocoaPods:
+This sample app uses the following published SDK version from CocoaPods:
 
-- **WebView SDK**: 2.0.16
-- **Core API SDK**: 2.0.15 (automatically included as a dependency)
+- **WebView SDK**: 2.0.17
 
 To update to a different version, modify the version in `Podfile` and run `pod install`.
 
@@ -74,8 +71,7 @@ pod install
 ```
 
 This will automatically install:
-- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.16)
-- `nimbbl_mobile_kit_ios_core_api_sdk` (2.0.15) - automatically included as a dependency
+- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.17)
 
 ### 3. Open the Project
 
@@ -91,223 +87,75 @@ open NimbblSampleApp.xcworkspace
 2. **Select your target device** (iPhone Simulator or physical device)
 3. **Build and run** the project (⌘+R)
 
-### Sample App Features
+## 🔧 Integrating the WebView SDK in Your App
 
-#### 1. Payment Configuration
-- **Amount**: Set payment amount (default: ₹100)
-- **Currency**: Select currency (INR, USD, etc.)
-- **Payment Options**: Customize payment methods
-- **Header Options**: Customize checkout header
+Below is a minimal end‑to‑end example of how to add and use the `nimbbl_mobile_kit_ios_webview_sdk` in your own iOS app.
 
-#### 2. User Details
-- **Name**: Customer name
-- **Phone**: Contact number
-- **Email**: Email address
-- **Toggle**: Enable/disable user details collection
+### 1. Add the Pod
 
-#### 3. Payment Flow
-1. **Configure payment** settings
-2. **Tap "Pay Now"** to start checkout
-3. **Complete payment** in the WebView interface
-4. **View results** (success/error)
+In your app’s `Podfile`:
 
-#### 4. Settings
-- **Environment URL**: Configure API endpoints
-- **QA Environment**: Switch between environments
+```ruby
+platform :ios, '13.0'
+use_frameworks!
 
-## 📁 Project Structure
-
-```
-NimbblSampleApp/
-├── App/
-│   ├── AppDelegate.swift
-│   ├── LaunchScreen.storyboard
-│   └── NimbblCheckout-Bridging-Header.h
-├── Extensions/
-│   ├── UIColor+Hex.swift
-│   ├── UIComponents.swift
-│   └── ViewController+UITextFieldDelegate.swift
-├── Models/
-│   ├── IconWithName.swift
-│   └── ImageWithName.swift
-├── Resources/
-│   └── Assets.xcassets/
-├── Supporting/
-│   ├── AppConstants.swift
-│   ├── CODE_ORGANIZATION.md
-│   └── Config.swift
-├── ViewModels/
-│   ├── Payment/
-│   │   └── PaymentManager.swift
-│   └── User/
-│       └── UserDetailsManager.swift
-├── Views/
-│   ├── Payment/
-│   │   ├── HeaderOptionsBottomSheetViewController.swift
-│   │   ├── PaymentOptionsBottomSheetViewController.swift
-│   │   └── SubPaymentOptionsBottomSheetViewController.swift
-│   ├── Settings/
-│   │   └── SettingsViewController.swift
-│   ├── ThankYou/
-│   │   └── ThankYouVC.swift
-│   └── ViewController.swift
-├── Podfile
-├── build_without_sandbox.sh
-└── clean_project.rb
+target 'YourAppName' do
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 2.0.17'
+end
 ```
 
-## 🔧 Configuration
+Then run:
 
-### Environment Setup
+```bash
+pod install
+open YourAppName.xcworkspace
+```
 
-The sample app supports multiple environments:
+### 2. Import and Initialize
+
+In the view controller from which you want to start checkout:
 
 ```swift
-// Development Environment
-let devUrl = "https://api-qa1.nimbbl.tech"
-
-// Production Environment
-let prodUrl = "https://api.nimbbl.tech"
-```
-
-### SDK Integration
-
-The sample app demonstrates integration with both SDKs:
-
-```swift
-// Core API SDK v2.0.0 Integration
-import nimbbl_mobile_kit_ios_core_api_sdk
-
-let sdk = NimbblCoreApiSDK.shared
-sdk.updateOrderDetails(token: orderToken, orderId: orderId) { result in
-    // Handle response with enhanced error handling
-}
-
-// WebView SDK v2.0.0 Integration
 import nimbbl_mobile_kit_ios_webview_sdk
 
-NimbblCheckoutSDK.shared.delegate = self
-let options = NimbblCheckoutOptions()
-options.orderToken = "your_order_token"
-NimbblCheckoutSDK.shared.checkout(from: self, options: options)
+class MyViewController: UIViewController, NimbblCheckoutSDKDelegate {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        NimbblCheckoutSDK.shared.delegate = self
+    }
+
+    func startCheckout(with orderToken: String) {
+        let options = NimbblCheckoutOptions(orderToken: orderToken, paymentModeCode: nil, bankCode: nil, walletCode: nil, paymentFlow: nil)
+        NimbblCheckoutSDK.shared.checkout(from: self, options: options)
+    }
+
+    // MARK: - NimbblCheckoutSDKDelegate
+    func onCheckoutResponse(data: [AnyHashable: Any]) {
+        // Handle checkout response (success, failure, cancel, etc.)
+    }
+}
 ```
 
-## 🎨 Customization
+### 3. Configure UPI/Wallet URL Schemes
 
-### UI Customization
+Add the following under the root `<dict>` in your app’s `Info.plist` to allow UPI/wallet app detection:
 
-The sample app includes various customization options:
-
-- **Header Options**: Customize checkout header appearance
-- **Payment Options**: Configure available payment methods
-- **Amount & Currency**: Set payment amount and currency
-- **User Details**: Collect customer information
-
-### Payment Flow Customization
-
-```swift
-// Customize checkout options
-let options = NimbblCheckoutOptions()
-options.orderToken = orderToken
-options.amount = amount
-options.currency = currency
-options.customerName = customerName
-options.customerEmail = customerEmail
-options.customerPhone = customerPhone
-
-// Start checkout
-NimbblCheckoutSDK.shared.checkout(from: self, options: options)
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>credpay</string>
+    <string>gpay</string>
+    <string>mobikwik</string>
+    <string>phonepe</string>
+    <string>paytmmp</string>
+    <string>navipay</string>
+    <string>super</string>
+    <string>popclubapp</string>
+    <string>amazonpay</string>
+    <string>kotak811</string>
+    <string>bhim</string>
+    <string>jupiter</string>
+</array>
 ```
 
-## 🔍 Debugging
-
-### Build Scripts
-
-The project includes helpful build scripts:
-
-```bash
-# Build without code signing (for development)
-./build_without_sandbox.sh
-
-# Clean project
-ruby clean_project.rb
-```
-
-### Logging
-
-The sample app includes comprehensive logging:
-
-```swift
-// Enable debug logging
-LogUtil.debugLog(tag: "SampleApp", message: "Debug message")
-
-// Error logging
-LogUtil.errorLog(tag: "SampleApp", message: "Error occurred")
-```
-
-## 📚 Documentation
-
-- [Core API SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_sdk)
-- [WebView SDK Documentation](https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_sdk)
-- [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Build Errors**
-   - Run `pod install` to install dependencies from CocoaPods
-   - Clean build folder (⌘+Shift+K)
-   - Ensure you're opening `NimbblSampleApp.xcworkspace` (not `.xcodeproj`)
-
-2. **Runtime Errors**
-   - Check network connectivity
-   - Verify API endpoints in settings
-   - Check console logs for error messages
-
-3. **Payment Issues**
-   - Verify order token is valid
-   - Check payment amount and currency
-   - Ensure proper delegate implementation
-
-### Getting Help
-
-- **Documentation**: Check the SDK documentation
-- **Issues**: Report issues on GitHub
-- **Support**: Contact support@nimbbl.com
-
-## 🚀 Production Deployment
-
-### Before Production
-
-1. **Update API endpoints** to production URLs
-2. **Configure code signing** for App Store distribution
-3. **Test thoroughly** on physical devices
-4. **Review security** settings and configurations
-
-### Build Configuration
-
-```bash
-# Production build
-xcodebuild -workspace NimbblSampleApp.xcworkspace \
-           -scheme NimbblSampleApp \
-           -configuration Release \
-           -destination 'generic/platform=iOS' \
-           archive
-```
-
-## 📄 License
-
-This sample app is provided as-is for demonstration purposes. See the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-For support and questions:
-
-- **Email**: support@nimbbl.biz
-- **Website**: https://nimbbl.biz
-- **Documentation**: [Nimbbl Developer Docs](https://nimbbl.biz/docs/homepage)
-
----
-
-**Happy Coding! 🎉**
+With these three steps (Podfile, import/usage, and `Info.plist` schemes), you have a working WebView SDK integration similar to what this sample app uses.

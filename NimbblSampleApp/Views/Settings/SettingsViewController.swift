@@ -46,7 +46,7 @@ class SettingsViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupUI()
         setupConstraints()
     }
@@ -93,30 +93,30 @@ class SettingsViewController: UIViewController {
         headerView.addSubview(titleLabel)
         environmentLabel.text = TextConstants.selectEnvironment
         environmentLabel.font = UIFont.preferredFont(forTextStyle: .headline)
-        environmentLabel.textColor = .black
+        environmentLabel.textColor = .label
         environmentLabel.isHidden = false
         environmentButton.setTitle(selectedEnvironment, for: .normal)
-        environmentButton.setTitleColor(.black, for: .normal)
+        environmentButton.setTitleColor(.label, for: .normal)
         environmentButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
         environmentButton.contentHorizontalAlignment = .left
-        environmentButton.backgroundColor = .white
+        environmentButton.backgroundColor = .secondarySystemBackground
         environmentButton.layer.cornerRadius = 10
         environmentButton.layer.borderWidth = 0
         environmentButton.addTarget(self, action: #selector(environmentTapped), for: .touchUpInside)
         let environmentChevron = UIImageView()
         environmentChevron.image = UIImage(systemName: "chevron.down")
-        environmentChevron.tintColor = .gray
+        environmentChevron.tintColor = .secondaryLabel
         environmentChevron.translatesAutoresizingMaskIntoConstraints = false
         environmentButton.addSubview(environmentChevron)
-        environmentUnderline.backgroundColor = UIColor.gray.withAlphaComponent(0.3)
+        environmentUnderline.backgroundColor = UIColor.separator
         qaUrlTextField.placeholder = "Enter QA environment URL"
         qaUrlTextField.text = qaUrl
         qaUrlTextField.font = UIFont.preferredFont(forTextStyle: .body)
-        qaUrlTextField.textColor = .black
-        qaUrlTextField.backgroundColor = .white
+        qaUrlTextField.textColor = .label
+        qaUrlTextField.backgroundColor = .secondarySystemBackground
         qaUrlTextField.layer.cornerRadius = 8
         qaUrlTextField.layer.borderWidth = 1
-        qaUrlTextField.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        qaUrlTextField.layer.borderColor = UIColor.separator.cgColor
         qaUrlTextField.isHidden = selectedEnvironment != "QA"
         qaUrlTextField.addTarget(self, action: #selector(qaUrlChanged), for: .editingChanged)
         
@@ -130,25 +130,25 @@ class SettingsViewController: UIViewController {
         qaUrlTextField.rightViewMode = .always
         experienceLabel.text = TextConstants.selectExperience
         experienceLabel.font = UIFont.preferredFont(forTextStyle: .headline)
-        experienceLabel.textColor = .black
+        experienceLabel.textColor = .label
         experienceButton.setTitle(selectedExperience, for: .normal)
-        experienceButton.setTitleColor(.black, for: .normal)
+        experienceButton.setTitleColor(.label, for: .normal)
         experienceButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
         experienceButton.contentHorizontalAlignment = .left
-        experienceButton.backgroundColor = .white
+        experienceButton.backgroundColor = .secondarySystemBackground
         experienceButton.layer.cornerRadius = 10
         experienceButton.layer.borderWidth = 0
         experienceButton.addTarget(self, action: #selector(experienceTapped), for: .touchUpInside)
         let experienceChevron = UIImageView()
         experienceChevron.image = UIImage(systemName: "chevron.down")
-        experienceChevron.tintColor = .gray
+        experienceChevron.tintColor = .secondaryLabel
         experienceChevron.translatesAutoresizingMaskIntoConstraints = false
         experienceButton.addSubview(experienceChevron)
-        experienceUnderline.backgroundColor = UIColor.gray.withAlphaComponent(0.3)
+        experienceUnderline.backgroundColor = UIColor.separator
         doneButton.setTitle(TextConstants.done, for: .normal)
-        doneButton.setTitleColor(.black, for: .normal)
+        doneButton.setTitleColor(.label, for: .normal)
         doneButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
-        doneButton.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        doneButton.backgroundColor = .tertiarySystemFill
         doneButton.layer.cornerRadius = 10
         doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
         contentView.layoutMargins = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)

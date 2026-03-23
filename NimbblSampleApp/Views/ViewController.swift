@@ -62,7 +62,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         // Add tap gesture to dismiss keyboard when tapping outside text fields
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -157,7 +157,8 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         scrollView.bounces = true
         scrollView.alwaysBounceVertical = true
         scrollView.contentInsetAdjustmentBehavior = .never
-        
+        contentView.backgroundColor = .systemBackground
+
         // Header (move out of contentView)
         view.addSubview(headerView)
         headerView.backgroundColor = .black
@@ -191,16 +192,16 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let titleAttributedText = NSMutableAttributedString(string: "paper plane.")
         titleAttributedText.addAttribute(.kern, value: -0.32, range: NSRange(location: 0, length: titleAttributedText.length))
         titleLabel.attributedText = titleAttributedText
-        titleLabel.textColor = .black
-        
+        titleLabel.textColor = .label
+
         contentView.addSubview(currencyAmountView)
-        currencyAmountView.backgroundColor = .white
+        currencyAmountView.backgroundColor = .secondarySystemBackground
         currencyAmountView.layer.cornerRadius = 10
         currencyAmountView.layer.borderWidth = 1
-        currencyAmountView.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
-        
+        currencyAmountView.layer.borderColor = UIColor.separator.cgColor
+
         currencyButton.setTitle(paymentManager.selectedCurrency, for: .normal)
-        currencyButton.setTitleColor(.black, for: .normal)
+        currencyButton.setTitleColor(.label, for: .normal)
         currencyButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
         currencyButton.addTarget(self, action: #selector(currencyTapped), for: .touchUpInside)
         currencyButton.isUserInteractionEnabled = true
@@ -208,27 +209,30 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         view.bringSubviewToFront(currencyButton)
         
         let divider = UIView()
-        divider.backgroundColor = .gray
+        divider.backgroundColor = .separator
         divider.translatesAutoresizingMaskIntoConstraints = false
         currencyAmountView.addSubview(divider)
         
         amountTextField.placeholder = paymentManager.amountValue
         amountTextField.font = UIFont.preferredFont(forTextStyle: .title3)
-        amountTextField.textColor = .black
+        amountTextField.textColor = .label
         amountTextField.keyboardType = .decimalPad
         amountTextField.textAlignment = .center
         amountTextField.addTarget(self, action: #selector(amountChanged), for: .editingChanged)
-        // Set placeholder color
+        // Set placeholder color (adapts to light/dark mode)
         amountTextField.attributedPlaceholder = NSAttributedString(
             string: paymentManager.amountValue,
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.placeholderText]
         )
         view.addSubview(amountTextField)
         view.bringSubviewToFront(amountTextField)
         
         // Info
         contentView.addSubview(infoView)
-        infoImageView.image = UIImage(named: "infoIcon")
+        if let infoImage = UIImage(named: "infoIcon") {
+            infoImageView.image = infoImage.withRenderingMode(.alwaysTemplate)
+            infoImageView.tintColor = .systemBlue
+        }
         infoImageView.layer.cornerRadius = 8 // since width/height = 16
         infoImageView.clipsToBounds = true
         infoView.addSubview(infoImageView)
@@ -237,15 +241,16 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let infoAttributedText = NSMutableAttributedString(string: TextConstants.infoMessage)
         infoAttributedText.addAttribute(.kern, value: -0.24, range: NSRange(location: 0, length: infoAttributedText.length))
         infoLabel.attributedText = infoAttributedText
+        infoLabel.textColor = .secondaryLabel
         infoView.addSubview(infoLabel)
-        
+
         // Personalised options
         contentView.addSubview(personalisedOptionsView)
         personalisedOptionsView.addSubview(personalisedOptionsLabel)
         personalisedOptionsView.addSubview(personalisedOptionsSwitch)
         personalisedOptionsLabel.text = TextConstants.orderLineItems
         personalisedOptionsLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        personalisedOptionsLabel.textColor = .black
+        personalisedOptionsLabel.textColor = .label
         personalisedOptionsView.addSubview(personalisedOptionsSwitch)
         personalisedOptionsSwitch.onTintColor = .black
         personalisedOptionsSwitch.addTarget(self, action: #selector(personalisedOptionsChanged), for: .valueChanged)
@@ -256,7 +261,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         contentView.addSubview(headerCustomisationView)
         headerCustomisationLabel.text = TextConstants.headerCustomisation
         headerCustomisationLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        headerCustomisationLabel.textColor = .black
+        headerCustomisationLabel.textColor = .label
         headerCustomisationLabel.translatesAutoresizingMaskIntoConstraints = false
         headerCustomisationView.addSubview(headerCustomisationLabel)
         headerCustomisationView.addSubview(headerCustomisationButton)
@@ -274,14 +279,14 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         if #available(iOS 15.0, *) {
             var config = UIButton.Configuration.filled()
             config.title = "" // No text
-            config.baseBackgroundColor = .white
-            config.baseForegroundColor = .black
+            config.baseBackgroundColor = .secondarySystemBackground
+            config.baseForegroundColor = .label
             config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 28, bottom: 0, trailing: 0)
             headerCustomisationButton.configuration = config
         } else {
             headerCustomisationButton.setTitle("", for: .normal)
         headerCustomisationButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 28, bottom: 0, right: 0)
-            headerCustomisationButton.backgroundColor = .white
+            headerCustomisationButton.backgroundColor = .secondarySystemBackground
         }
         // Always ensure no text
         headerCustomisationButton.setTitle("", for: .normal)
@@ -290,18 +295,18 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         contentView.addSubview(paymentCustomisationView)
         paymentCustomisationLabel.text = TextConstants.paymentCustomisation
         paymentCustomisationLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        paymentCustomisationLabel.textColor = .black
+        paymentCustomisationLabel.textColor = .label
         paymentCustomisationView.addSubview(paymentCustomisationLabel)
-        
+
         // Remove label text from paymentCustomisationButton and subPaymentButton immediately after creation
         paymentCustomisationButton.setTitle("", for: .normal)
         subPaymentButton.setTitle("", for: .normal)
-        paymentCustomisationButton.setTitleColor(.black, for: .normal)
+        paymentCustomisationButton.setTitleColor(.label, for: .normal)
         paymentCustomisationButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
-        paymentCustomisationButton.backgroundColor = .white
+        paymentCustomisationButton.backgroundColor = .secondarySystemBackground
         paymentCustomisationButton.layer.cornerRadius = 10
         paymentCustomisationButton.layer.borderWidth = 1
-        paymentCustomisationButton.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        paymentCustomisationButton.layer.borderColor = UIColor.separator.cgColor
         paymentCustomisationButton.addTarget(self, action: #selector(paymentCustomisationTapped), for: .touchUpInside)
         paymentCustomisationButton.isUserInteractionEnabled = true
         view.addSubview(paymentCustomisationButton)
@@ -310,17 +315,17 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         // Sub payment label
         subPaymentLabel.text = TextConstants.subPaymentMode
         subPaymentLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        subPaymentLabel.textColor = .black
+        subPaymentLabel.textColor = .label
         subPaymentLabel.translatesAutoresizingMaskIntoConstraints = false
         paymentCustomisationView.addSubview(subPaymentLabel)
-        
+
         subPaymentButton.setTitle("", for: .normal)
-        subPaymentButton.setTitleColor(.black, for: .normal)
+        subPaymentButton.setTitleColor(.label, for: .normal)
         subPaymentButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
-        subPaymentButton.backgroundColor = .white
+        subPaymentButton.backgroundColor = .secondarySystemBackground
         subPaymentButton.layer.cornerRadius = 10
         subPaymentButton.layer.borderWidth = 1
-        subPaymentButton.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        subPaymentButton.layer.borderColor = UIColor.separator.cgColor
         subPaymentButton.addTarget(self, action: #selector(subPaymentTapped), for: .touchUpInside)
         subPaymentButton.isUserInteractionEnabled = true
         subPaymentButton.isHidden = true
@@ -331,7 +336,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         contentView.addSubview(userDetailsView)
         userDetailsLabel.text = TextConstants.userDetails
         userDetailsLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        userDetailsLabel.textColor = .black
+        userDetailsLabel.textColor = .label
         userDetailsView.addSubview(userDetailsLabel)
         userDetailsSwitch.onTintColor = .black
         userDetailsSwitch.addTarget(self, action: #selector(userDetailsSwitchChanged), for: .valueChanged)
@@ -350,10 +355,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         // Configure text fields
         nameTextField.placeholder = TextConstants.name
         nameTextField.font = UIFont.preferredFont(forTextStyle: .body)
-        nameTextField.backgroundColor = .white
+        nameTextField.textColor = .label
+        nameTextField.backgroundColor = .secondarySystemBackground
         nameTextField.layer.cornerRadius = 8
         nameTextField.layer.borderWidth = 2
-        nameTextField.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        nameTextField.layer.borderColor = UIColor.separator.cgColor
         nameTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         nameTextField.leftViewMode = .always
         nameTextField.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
@@ -361,10 +367,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         
         numberTextField.placeholder = TextConstants.number
         numberTextField.font = UIFont.preferredFont(forTextStyle: .body)
-        numberTextField.backgroundColor = .white
+        numberTextField.textColor = .label
+        numberTextField.backgroundColor = .secondarySystemBackground
         numberTextField.layer.cornerRadius = 8
         numberTextField.layer.borderWidth = 2
-        numberTextField.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        numberTextField.layer.borderColor = UIColor.separator.cgColor
         numberTextField.keyboardType = .numberPad
         numberTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         numberTextField.leftViewMode = .always
@@ -373,35 +380,35 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         
         emailTextField.placeholder = TextConstants.email
         emailTextField.font = UIFont.preferredFont(forTextStyle: .body)
-        emailTextField.backgroundColor = .white
+        emailTextField.textColor = .label
+        emailTextField.backgroundColor = .secondarySystemBackground
         emailTextField.layer.cornerRadius = 8
         emailTextField.layer.borderWidth = 2
-        emailTextField.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        emailTextField.layer.borderColor = UIColor.separator.cgColor
         emailTextField.keyboardType = .emailAddress
         emailTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         emailTextField.leftViewMode = .always
         emailTextField.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
         emailTextField.isUserInteractionEnabled = true
         
-        // Pay button
+        // Pay button (adaptive: dark bg + light text in light mode, light bg + dark text in dark mode)
         if #available(iOS 15.0, *) {
             var config = UIButton.Configuration.filled()
             config.title = TextConstants.payNow
-            config.baseBackgroundColor = .black // Ensure black background
-            config.baseForegroundColor = .white // Ensure white text
+            config.baseBackgroundColor = .label
+            config.baseForegroundColor = .systemBackground
             config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 28, bottom: 0, trailing: 0)
             payNowButton.configuration = config
         } else {
             payNowButton.setTitle(TextConstants.payNow, for: .normal)
             payNowButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 28, bottom: 0, right: 0)
-            payNowButton.backgroundColor = .black
+            payNowButton.backgroundColor = .label
         }
-        payNowButton.setTitleColor(.white, for: .normal)
+        payNowButton.setTitleColor(.systemBackground, for: .normal)
         payNowButton.titleLabel?.font = UIFont(name: "Gordita-Medium", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .medium)
         payNowButton.layer.cornerRadius = 12
-        // If you add an icon to payNowButton, set its rendering mode and tint color here:
         if let imageView = payNowButton.imageView {
-            imageView.tintColor = .black
+            imageView.tintColor = .systemBackground
         }
         payNowButton.addTarget(self, action: #selector(payNowTapped), for: .touchUpInside)
         payNowButton.isUserInteractionEnabled = true
@@ -418,19 +425,20 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         footerLabel.font = UIFont(name: "Gordita-Medium", size: 10) ?? UIFont.systemFont(ofSize: 10, weight: .medium)
         let footerAttributedText = NSMutableAttributedString(string: TextConstants.footerText)
         footerAttributedText.addAttribute(.kern, value: -0.48, range: NSRange(location: 0, length: footerAttributedText.length))
-        footerAttributedText.addAttribute(.foregroundColor, value: UIColor(hex: "#606060"), range: NSRange(location: 0, length: footerAttributedText.length))
+        footerAttributedText.addAttribute(.foregroundColor, value: UIColor.secondaryLabel, range: NSRange(location: 0, length: footerAttributedText.length))
         footerLabel.attributedText = footerAttributedText
         footerView.addSubview(footerLabel)
 
-        headerCustomisationButton.backgroundColor = .white
+        headerCustomisationButton.backgroundColor = .secondarySystemBackground
         headerCustomisationButton.layer.cornerRadius = 10
         headerCustomisationButton.layer.borderWidth = 1
-        headerCustomisationButton.layer.borderColor = UIColor.gray.withAlphaComponent(0.3).cgColor
+        headerCustomisationButton.layer.borderColor = UIColor.separator.cgColor
 
         headerButtonContentView.translatesAutoresizingMaskIntoConstraints = false
         headerIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         headerButtonLabel.translatesAutoresizingMaskIntoConstraints = false
         headerButtonLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
+        headerButtonLabel.textColor = .label
         headerButtonLabel.text = paymentManager.selectedHeader.displayName
         headerIndicatorView.backgroundColor = paymentManager.orderLineItemsEnabled ? UIColor(red: 0.13, green: 0.15, blue: 0.30, alpha: 1) : UIColor(red: 0.984, green: 0.22, blue: 0.114, alpha: 1)
         headerIndicatorView.layer.cornerRadius = 8
@@ -573,7 +581,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         ])
         
         // Currency button and amount text field constraints
-        let divider = currencyAmountView.subviews.first { $0.backgroundColor == .gray }
+        let divider = currencyAmountView.subviews.first { $0.backgroundColor == .separator }
         
         NSLayoutConstraint.activate([
             currencyButton.leadingAnchor.constraint(equalTo: currencyAmountView.leadingAnchor, constant: 8),
@@ -969,7 +977,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
             let dropdownIcon = UIImageView(image: UIImage(systemName: "chevron.down"))
             dropdownIcon.contentMode = .scaleAspectFit
             dropdownIcon.translatesAutoresizingMaskIntoConstraints = false
-            dropdownIcon.tintColor = .black
+            dropdownIcon.tintColor = .label
             headerCustomisationButton.addSubview(dropdownIcon)
             NSLayoutConstraint.activate([
                 dropdownIcon.trailingAnchor.constraint(equalTo: headerCustomisationButton.trailingAnchor, constant: -8),
@@ -1030,13 +1038,13 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let iconView = UIImageView(image: selected.icon?.withRenderingMode(.alwaysTemplate))
         iconView.contentMode = .scaleAspectFit
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.tintColor = .black
+        iconView.tintColor = .label
         container.addSubview(iconView)
 
         let label = UILabel()
         label.text = selected.name
         label.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .black
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
@@ -1044,7 +1052,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let dropdownIcon = UIImageView(image: UIImage(systemName: "chevron.down"))
         dropdownIcon.contentMode = .scaleAspectFit
         dropdownIcon.translatesAutoresizingMaskIntoConstraints = false
-        dropdownIcon.tintColor = .black
+        dropdownIcon.tintColor = .label
         paymentCustomisationButton.addSubview(dropdownIcon)
 
         NSLayoutConstraint.activate([
@@ -1093,17 +1101,17 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
-        let iconImage = UIImage(named: selected.imageName)
+        let iconImage = UIImage(named: selected.imageName)?.withRenderingMode(.alwaysTemplate)
         let iconView = UIImageView(image: iconImage)
         iconView.contentMode = .scaleAspectFit
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        // Do not set tintColor or rendering mode, keep original asset color
+        iconView.tintColor = .label
         container.addSubview(iconView)
 
         let label = UILabel()
         label.text = selected.name
         label.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
-        label.textColor = .black
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
@@ -1111,7 +1119,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let dropdownIcon = UIImageView(image: UIImage(systemName: "chevron.down"))
         dropdownIcon.contentMode = .scaleAspectFit
         dropdownIcon.translatesAutoresizingMaskIntoConstraints = false
-        dropdownIcon.tintColor = .black
+        dropdownIcon.tintColor = .label
         subPaymentButton.addSubview(dropdownIcon)
 
         NSLayoutConstraint.activate([
