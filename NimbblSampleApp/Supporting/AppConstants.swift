@@ -97,11 +97,35 @@ struct TextConstants {
     static let brandLogo = "your brand logo"
     static let prod = "Prod"
     static let preProd = "Pre-Prod"
+    static let qa = "QA"
+    // Legacy display strings (kept for back-compat with stored prefs)
     static let qa1 = "QA 1"
     static let qa2 = "QA 2"
     static let native = "Native"
-    static let webView = "WebView"
+    static let webView = "Webview"  // matches Android AppConstants.EXPERIENCE_WEBVIEW
     static let headerOptionCell = "HeaderOptionCell"
+
+    // EMI feature labels (mirror Android strings.xml)
+    static let emi = "emi"
+    static let allEmis = "all emis"
+    static let debitCardEmi = "debit card emi"
+    static let creditCardEmi = "credit card emi"
+    static let cardlessEmi = "cardless emi"
+
+    // UPI intent app labels (mirror Android strings.xml)
+    static let upiAppTitle = "upi app"
+    static let upiAppGpay = "Google Pay"
+    static let upiAppPhonepe = "PhonePe"
+    static let upiAppPaytm = "Paytm"
+
+    // Debug section labels (mirror Android NimbblConfigActivity strings)
+    static let accessTokenTitle = "Access Token"
+    static let accessTokenPlaceholder = "Optional Core API auth token"
+    static let sdkDebugLogsLabel = "SDK Debug Logs"
+    static let viewDebugLogs = "View Debug Logs"
+    static let debugLogsTitle = "Debug Logs"
+    static let debugOptionsUnlocked = "Debug options unlocked"
+    static let clear = "Clear"
 }
 
 // MARK: - Font Names
@@ -168,11 +192,29 @@ struct DebugConfig {
     #else
     static let debugPrintEnabled = false
     #endif
+}
+
+/// Sample-app debug logging: mirrors `print` and feeds the in-app Debug Logs viewer.
+enum DebugLog {
+    static func log(_ items: Any..., separator: String = " ", terminator: String = "\n") {
+        guard DebugConfig.debugPrintEnabled else { return }
+        let message = items.map { "\($0)" }.joined(separator: separator)
+        print(message, terminator: terminator)
+        AppLogStream.shared.appendLog(message)
+    }
 } 
 
 // MARK: - Environment URLs
+// Mirrors Android `tech.nimbbl.exmaple.utils.ApiConstants`:
+//   NIMBBL_TECH_URL   = "https://api.nimbbl.tech/"
+//   BASE_URL_PRE_PROD = "https://apipp.nimbbl.tech/"
+//   BASE_URL_QA3      = "https://qa3api.qa.nimbbl.tech/"
 struct EnvironmentUrls {
     static let prod = "https://api.nimbbl.tech/"
     static let preProd = "https://apipp.nimbbl.tech/"
+    /// Default QA URL used when the user picks "QA" without editing.
+    /// Matches Android `ApiConstants.BASE_URL_QA3`.
+    static let qa = "https://qa3api.qa.nimbbl.tech/"
+    // Legacy QA1 host kept for migration of older stored prefs.
     static let qa1 = "https://qa1api.nimbbl.tech/"
 }

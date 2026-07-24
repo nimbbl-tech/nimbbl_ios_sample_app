@@ -4,22 +4,37 @@ Copyright (c) 2025 Bigital Technologies Pvt. Ltd. All rights reserved.
 */
 
 import UIKit
+import nimbbl_mobile_kit_ios_webview_sdk
 
 class SettingsViewController: UIViewController {
     // MARK: - State
-    let environments = ["Prod", "Pre-Prod", "QA"]
+    // Mirrors Android `NimbblConfigActivity.environments` — Prod/Pre-Prod/QA.
+    let environments = [Environment.prod.rawValue, Environment.preProd.rawValue, Environment.qa.rawValue]
     let experiences = Experience.allCases.map { $0.rawValue }
     var selectedEnvironment: String = UserDefaults.standard.selectedEnvironment
     var selectedExperience: String = UserDefaults.standard.selectedExperience
     var qaUrl: String {
         get {
-            return UserDefaults.standard.string(forKey: "qaEnvironmentUrl") ?? EnvironmentUrls.qa1
+            let v = UserDefaults.standard.qaEnvironmentUrl
+            return v.isEmpty ? EnvironmentUrls.qa : v
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "qaEnvironmentUrl")
+            UserDefaults.standard.qaEnvironmentUrl = newValue
         }
     }
     let qaUrlTextField = UITextField()
+
+    // MARK: - Debug section (hidden until user taps header 7 times within 2s)
+    let debugSectionStack = UIStackView()
+    let accessTokenLabel = UILabel()
+    let accessTokenField = UITextField()
+    let accessTokenClear = UIButton(type: .system)
+    let sdkDebugLogsLabel = UILabel()
+    let sdkDebugLogsSwitch = UISwitch()
+    let viewDebugLogsButton = UIButton(type: .system)
+
+    private var debugTapCount = 0
+    private var lastDebugTapTime: TimeInterval = 0
     
     // MARK: - Dynamic Constraints
     var experienceLabelTopConstraint: NSLayoutConstraint?
@@ -49,6 +64,143 @@ class SettingsViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupUI()
         setupConstraints()
+        setupDebugSection()
+        setupDebugUnlockGesture()
+    }
+
+    // MARK: - Debug section setup
+
+    private func setupDebugSection() {
+        // Container stack
+        debugSectionStack.axis = .vertical
+        debugSectionStack.spacing = 12
+        debugSectionStack.alignment = .fill
+        debugSectionStack.distribution = .fill
+        debugSectionStack.translatesAutoresizingMaskIntoConstraints = false
+        debugSectionStack.isHidden = !UserDefaults.standard.debugMenuUnlocked
+        contentView.addSubview(debugSectionStack)
+
+        // Access token row
+        accessTokenLabel.text = TextConstants.accessTokenTitle
+        accessTokenLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+        accessTokenLabel.textColor = .label
+
+        accessTokenField.placeholder = TextConstants.accessTokenPlaceholder
+        accessTokenField.text = UserDefaults.standard.accessToken
+        accessTokenField.font = UIFont.preferredFont(forTextStyle: .body)
+        accessTokenField.textColor = .label
+        accessTokenField.backgroundColor = .secondarySystemBackground
+        accessTokenField.layer.cornerRadius = 8
+        accessTokenField.layer.borderWidth = 1
+        accessTokenField.layer.borderColor = UIColor.separator.cgColor
+        accessTokenField.autocorrectionType = .no
+        accessTokenField.autocapitalizationType = .none
+        accessTokenField.addTarget(self, action: #selector(accessTokenChanged), for: .editingChanged)
+        let leftPad = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 44))
+        accessTokenField.leftView = leftPad
+        accessTokenField.leftViewMode = .always
+
+        accessTokenClear.setTitle(TextConstants.clear, for: .normal)
+        accessTokenClear.setTitleColor(.systemRed, for: .normal)
+        accessTokenClear.addTarget(self, action: #selector(accessTokenCleared), for: .touchUpInside)
+        accessTokenClear.isHidden = accessTokenField.text?.isEmpty != false
+
+        let tokenRow = UIStackView(arrangedSubviews: [accessTokenField, accessTokenClear])
+        tokenRow.axis = .horizontal
+        tokenRow.spacing = 8
+        tokenRow.alignment = .center
+        tokenRow.distribution = .fill
+        accessTokenField.translatesAutoresizingMaskIntoConstraints = false
+        accessTokenField.heightAnchor.constraint(equalToConstant: 44).isActive = true
+
+        // SDK debug logs row
+        sdkDebugLogsLabel.text = TextConstants.sdkDebugLogsLabel
+        sdkDebugLogsLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        sdkDebugLogsLabel.textColor = .label
+        sdkDebugLogsSwitch.isOn = UserDefaults.standard.debugLogsEnabled
+        sdkDebugLogsSwitch.addTarget(self, action: #selector(sdkDebugLogsToggled), for: .valueChanged)
+        let switchRow = UIStackView(arrangedSubviews: [sdkDebugLogsLabel, UIView(), sdkDebugLogsSwitch])
+        switchRow.axis = .horizontal
+        switchRow.spacing = 8
+        switchRow.alignment = .center
+
+        // View debug logs row
+        viewDebugLogsButton.setTitle(TextConstants.viewDebugLogs, for: .normal)
+        viewDebugLogsButton.contentHorizontalAlignment = .left
+        viewDebugLogsButton.addTarget(self, action: #selector(viewDebugLogsTapped), for: .touchUpInside)
+
+        debugSectionStack.addArrangedSubview(accessTokenLabel)
+        debugSectionStack.addArrangedSubview(tokenRow)
+        debugSectionStack.addArrangedSubview(switchRow)
+        debugSectionStack.addArrangedSubview(viewDebugLogsButton)
+
+        NSLayoutConstraint.activate([
+            debugSectionStack.topAnchor.constraint(equalTo: doneButton.bottomAnchor, constant: 24),
+            debugSectionStack.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            debugSectionStack.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            debugSectionStack.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -32)
+        ])
+    }
+
+    private func setupDebugUnlockGesture() {
+        // 7 taps on the header within 2s unlocks the debug section (matches Android).
+        let tap = UITapGestureRecognizer(target: self, action: #selector(headerTapped))
+        tap.numberOfTapsRequired = 1
+        headerView.addGestureRecognizer(tap)
+        headerView.isUserInteractionEnabled = true
+    }
+
+    @objc private func headerTapped() {
+        let now = Date().timeIntervalSince1970
+        if now - lastDebugTapTime > 2.0 {
+            debugTapCount = 0
+        }
+        lastDebugTapTime = now
+        debugTapCount += 1
+
+        if debugTapCount >= 7 && !UserDefaults.standard.debugMenuUnlocked {
+            UserDefaults.standard.debugMenuUnlocked = true
+            debugSectionStack.isHidden = false
+            // Quick toast-style confirmation
+            let alert = UIAlertController(
+                title: nil,
+                message: TextConstants.debugOptionsUnlocked,
+                preferredStyle: .alert
+            )
+            present(alert, animated: true) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    alert.dismiss(animated: true)
+                }
+            }
+        }
+    }
+
+    @objc private func accessTokenChanged() {
+        accessTokenClear.isHidden = accessTokenField.text?.isEmpty != false
+    }
+
+    @objc private func accessTokenCleared() {
+        accessTokenField.text = ""
+        accessTokenClear.isHidden = true
+    }
+
+    @objc private func sdkDebugLogsToggled() {
+        // Commit immediately on toggle — this is a UISwitch, so the new state
+        // must survive a Back / swipe-down exit, not just Done. Persistence and
+        // SDK propagation happen together so the next checkout (and the next
+        // app launch) read the same value.
+        let isOn = sdkDebugLogsSwitch.isOn
+        UserDefaults.standard.debugLogsEnabled = isOn
+        NimbblCheckoutSDK.shared.setDebugLoggingEnabled(NSNumber(value: isOn))
+    }
+
+    @objc private func viewDebugLogsTapped() {
+        let vc = DebugLogsViewController()
+        if navigationController != nil {
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            present(UINavigationController(rootViewController: vc), animated: true)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -101,7 +253,8 @@ class SettingsViewController: UIViewController {
         environmentButton.contentHorizontalAlignment = .left
         environmentButton.backgroundColor = .secondarySystemBackground
         environmentButton.layer.cornerRadius = 10
-        environmentButton.layer.borderWidth = 0
+        environmentButton.layer.borderWidth = 1
+        environmentButton.layer.borderColor = UIColor.separator.cgColor
         environmentButton.addTarget(self, action: #selector(environmentTapped), for: .touchUpInside)
         let environmentChevron = UIImageView()
         environmentChevron.image = UIImage(systemName: "chevron.down")
@@ -137,7 +290,8 @@ class SettingsViewController: UIViewController {
         experienceButton.contentHorizontalAlignment = .left
         experienceButton.backgroundColor = .secondarySystemBackground
         experienceButton.layer.cornerRadius = 10
-        experienceButton.layer.borderWidth = 0
+        experienceButton.layer.borderWidth = 1
+        experienceButton.layer.borderColor = UIColor.separator.cgColor
         experienceButton.addTarget(self, action: #selector(experienceTapped), for: .touchUpInside)
         let experienceChevron = UIImageView()
         experienceChevron.image = UIImage(systemName: "chevron.down")
@@ -333,16 +487,45 @@ class SettingsViewController: UIViewController {
         present(alert, animated: true)
     }
     @objc func doneTapped() {
-        // Save selections to UserDefaults (already done in selection handlers)
+        // Mirrors Android `NimbblConfigActivity.savePreferences()`.
+        // Compute the shop base URL from the selected environment.
+        let baseUrl: String
+        switch selectedEnvironment {
+        case Environment.prod.rawValue: baseUrl = EnvironmentUrls.prod
+        case Environment.preProd.rawValue: baseUrl = EnvironmentUrls.preProd
+        case Environment.qa.rawValue:
+            let raw = qaUrlTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            baseUrl = raw.isEmpty ? EnvironmentUrls.qa : raw
+        default: baseUrl = EnvironmentUrls.prod
+        }
+
+        // Persist all preferences using Android-aligned keys.
+        UserDefaults.standard.shopBaseUrl = baseUrl
+        UserDefaults.standard.qaEnvironmentUrl = qaUrlTextField.text ?? ""
+        UserDefaults.standard.sampleAppMode = selectedExperience
+        if UserDefaults.standard.debugMenuUnlocked {
+            UserDefaults.standard.accessToken =
+                (accessTokenField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            UserDefaults.standard.debugLogsEnabled = sdkDebugLogsSwitch.isOn
+        }
+
+        // Propagate to the SDK so the next checkout uses the new env / debug toggle.
+        NimbblCheckoutSDK.shared.environmentUrl =
+            SampleShopAPIUtils.resolveSdkEnvironmentUrl(configuredBaseUrl: baseUrl)
+        NimbblCheckoutSDK.shared.setDebugLoggingEnabled(
+            NSNumber(value: UserDefaults.standard.debugLogsEnabled)
+        )
+
         self.dismiss(animated: true, completion: nil)
     }
+
     @objc func qaUrlChanged() {
         let newUrl = qaUrlTextField.text ?? ""
         if !newUrl.isEmpty {
             qaUrl = newUrl
         } else {
-            // If user clears the text field, set default URL
-            qaUrl = EnvironmentUrls.qa1
+            // Default to qa3 (Android `BASE_URL_QA3`) on empty input.
+            qaUrl = EnvironmentUrls.qa
             qaUrlTextField.text = qaUrl
         }
     }

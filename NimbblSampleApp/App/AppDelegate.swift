@@ -11,6 +11,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Pipe capture is unsafe under Xcode (SIGPIPE during checkout). Use DebugLog.log instead.
+        if !AppLogStream.isXcodeDebugSession {
+            AppLogStream.shared.install()
+        }
+
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootVC = ViewController()
         let nav = UINavigationController(rootViewController: rootVC)

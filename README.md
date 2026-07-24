@@ -31,11 +31,10 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with WebView SDK v2.0.17 (published)
+- ✅ Integration with WebView SDK **2.1.0-alpha.1** (local) or **2.0.17** (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
-- ✅ Production-ready configuration
-- ✅ Published SDKs from CocoaPods
+- ✅ Local or published SDKs via CocoaPods (`USE_LOCAL_SDKS` in `Podfile`)
 - ✅ Enhanced security and data handling
 
 ## 📋 Requirements
@@ -47,13 +46,16 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 
 ## 📦 SDK Versions
 
-This sample app uses the following published SDK version from CocoaPods:
+Controlled by `USE_LOCAL_SDKS` in `Podfile` (default: `true`):
 
-- **WebView SDK**: 2.0.17
+| Mode | WebView SDK | Core API SDK |
+|------|-------------|--------------|
+| **Local** (`USE_LOCAL_SDKS = true`) | `../nimbbl_mobile_kit_ios_webview_sdk` (2.1.0-alpha.1) | `../nimbbl_mobile_kit_ios_core_api_sdk` (2.1.0-alpha.1) |
+| **Published** (`USE_LOCAL_SDKS = false`) | CocoaPods `2.0.17` | pulled in as a dependency |
 
-To update to a different version, modify the version in `Podfile` and run `pod install`.
+Clone the iOS SDK repos as siblings of this sample app when using local mode. After changing `Podfile`, run `pod install`.
 
-## �� Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -64,16 +66,13 @@ cd nimbbl_ios_sample_app
 
 ### 2. Install CocoaPods Dependencies
 
-The sample app uses published SDKs from CocoaPods. Simply run:
-
 ```bash
 pod install
 ```
 
-This will automatically install:
-- `nimbbl_mobile_kit_ios_webview_sdk` (2.0.17)
+### 3. Open the Workspace
 
-### 3. Open the Project
+Always open the **workspace** (not the `.xcodeproj`):
 
 ```bash
 open NimbblSampleApp.xcworkspace

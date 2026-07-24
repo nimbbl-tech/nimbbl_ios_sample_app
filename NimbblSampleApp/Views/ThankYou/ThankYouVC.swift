@@ -248,13 +248,13 @@ class ThankYouVC: UIViewController {
     // MARK: - Data Parsing and Display
     
     private func parseAndDisplayPaymentData() {
-        print("ThankYouVC: parseAndDisplayPaymentData called")
-        print("ThankYouVC: paymentData = \(paymentData)")
+        DebugLog.log("ThankYouVC: parseAndDisplayPaymentData called")
+        DebugLog.log("ThankYouVC: paymentData = \(paymentData)")
         
         // Convert [AnyHashable: Any] to [String: Any] for consistency
         parsedPaymentData = convertAnyHashableToDictionary(paymentData)
         
-        print("ThankYouVC: Final parsedPaymentData = \(parsedPaymentData)")
+        DebugLog.log("ThankYouVC: Final parsedPaymentData = \(parsedPaymentData)")
         
         // Display order information
         displayOrderInformation()
@@ -287,13 +287,13 @@ class ThankYouVC: UIViewController {
     
     
     private func displayOrderInformation() {
-        print("ThankYouVC: displayOrderInformation called")
-        print("ThankYouVC: parsedPaymentData = \(parsedPaymentData)")
+        DebugLog.log("ThankYouVC: displayOrderInformation called")
+        DebugLog.log("ThankYouVC: parsedPaymentData = \(parsedPaymentData)")
         
         // Check if this is an encrypted response
         let isEncrypted = parsedPaymentData["is_encrypted"] as? Bool ?? false
         if isEncrypted {
-            print("ThankYouVC: Encrypted response detected")
+            DebugLog.log("ThankYouVC: Encrypted response detected")
             displayEncryptedResponse()
             return
         }
@@ -314,15 +314,15 @@ class ThankYouVC: UIViewController {
         // Handle "<null>" strings and empty values
         let transactionId = (rawTransactionId == "<null>" || rawTransactionId.isEmpty) ? "N/A" : rawTransactionId
         
-        print("ThankYouVC: displayOrderId = \(displayOrderId)")
-        print("ThankYouVC: displayStatus = \(displayStatus)")
-        print("ThankYouVC: message = \(message)")
-        print("ThankYouVC: reason = \(reason)")
-        print("ThankYouVC: rawTransactionId = \(rawTransactionId)")
-        print("ThankYouVC: transactionId = \(transactionId)")
+        DebugLog.log("ThankYouVC: displayOrderId = \(displayOrderId)")
+        DebugLog.log("ThankYouVC: displayStatus = \(displayStatus)")
+        DebugLog.log("ThankYouVC: message = \(message)")
+        DebugLog.log("ThankYouVC: reason = \(reason)")
+        DebugLog.log("ThankYouVC: rawTransactionId = \(rawTransactionId)")
+        DebugLog.log("ThankYouVC: transactionId = \(transactionId)")
         // Extract order details from nested "order" object
         let order = parsedPaymentData["order"] as? [String: Any] ?? [:]
-        print("ThankYouVC: Extracted order object = \(order)")
+        DebugLog.log("ThankYouVC: Extracted order object = \(order)")
         
         let totalAmount = order["total_amount"] as? Double ?? 0.0
         let currency = order["currency"] as? String ?? "INR"
@@ -336,7 +336,7 @@ class ThankYouVC: UIViewController {
         
         // Extract device info from nested "device" object
         let device = order["device"] as? [String: Any] ?? [:]
-        print("ThankYouVC: Extracted device object = \(device)")
+        DebugLog.log("ThankYouVC: Extracted device object = \(device)")
         
         let deviceIpAddress = device["ip_address"] as? String ?? ""
         let deviceName = device["device_name"] as? String ?? ""
@@ -344,14 +344,14 @@ class ThankYouVC: UIViewController {
         
         // Extract shipping address from nested "shipping_address" object
         let shippingAddress = order["shipping_address"] as? [String: Any] ?? [:]
-        print("ThankYouVC: Extracted shipping_address object = \(shippingAddress)")
+        DebugLog.log("ThankYouVC: Extracted shipping_address object = \(shippingAddress)")
         
         let shippingCity = shippingAddress["city"] as? String ?? ""
         let shippingState = shippingAddress["state"] as? String ?? ""
         let shippingCountry = shippingAddress["country"] as? String ?? ""
         let shippingPincode = shippingAddress["pincode"] as? String ?? ""
         
-        print("ThankYouVC: Extracted values - totalAmount: \(totalAmount), currency: \(currency), invoiceId: \(invoiceId), orderDate: \(orderDate)")
+        DebugLog.log("ThankYouVC: Extracted values - totalAmount: \(totalAmount), currency: \(currency), invoiceId: \(invoiceId), orderDate: \(orderDate)")
         
         // Update status UI
         updateStatusUI(displayStatus)
@@ -372,9 +372,9 @@ class ThankYouVC: UIViewController {
             transactionIdLabel.isHidden = true
         }
         
-        print("ThankYouVC: Updated orderIdLabel.text = \(orderIdLabel.text ?? "nil")")
-        print("ThankYouVC: Updated statusLabel.text = \(statusLabel.text ?? "nil")")
-        print("ThankYouVC: Updated transactionIdLabel.text = \(transactionIdLabel.text ?? "nil")")
+        DebugLog.log("ThankYouVC: Updated orderIdLabel.text = \(orderIdLabel.text ?? "nil")")
+        DebugLog.log("ThankYouVC: Updated statusLabel.text = \(statusLabel.text ?? "nil")")
+        DebugLog.log("ThankYouVC: Updated transactionIdLabel.text = \(transactionIdLabel.text ?? "nil")")
         
         // Show/hide amount field based on data availability
         if totalAmount > 0 {
@@ -411,12 +411,12 @@ class ThankYouVC: UIViewController {
         // Update action buttons based on status
         updateActionButtons(displayStatus)
         
-        print("ThankYouVC: Displaying order info:")
-        print("ThankYouVC:   Order ID: \(displayOrderId)")
-        print("ThankYouVC:   Status: \(displayStatus)")
-        print("ThankYouVC:   Message: \(message)")
-        print("ThankYouVC:   Reason: \(reason)")
-        print("ThankYouVC:   Amount: \(currency) \(totalAmount)")
+        DebugLog.log("ThankYouVC: Displaying order info:")
+        DebugLog.log("ThankYouVC:   Order ID: \(displayOrderId)")
+        DebugLog.log("ThankYouVC:   Status: \(displayStatus)")
+        DebugLog.log("ThankYouVC:   Message: \(message)")
+        DebugLog.log("ThankYouVC:   Reason: \(reason)")
+        DebugLog.log("ThankYouVC:   Amount: \(currency) \(totalAmount)")
     }
     
     private func updateStatusUI(_ status: String) {
@@ -535,7 +535,7 @@ class ThankYouVC: UIViewController {
         
         // Log the encrypted response for debugging
         let encryptedResponse = parsedPaymentData["encrypted_response"] as? String ?? ""
-        print("ThankYouVC: Encrypted response received: \(String(encryptedResponse.prefix(100)))...")
+        DebugLog.log("ThankYouVC: Encrypted response received: \(String(encryptedResponse.prefix(100)))...")
     }
     
     private func updateActionButtons(_ status: String) {

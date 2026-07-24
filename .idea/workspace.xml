@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="711e9c75-a0a9-4a24-af96-4674672aa6ed" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/App/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/App/AppDelegate.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Supporting/AppConstants.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Supporting/AppConstants.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Supporting/Config.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Supporting/Config.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Supporting/SampleShopAPIUtils.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Supporting/SampleShopAPIUtils.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/ViewModels/Payment/PaymentManager.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/ViewModels/Payment/PaymentManager.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Views/Payment/HeaderOptionsBottomSheetViewController.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Views/Payment/HeaderOptionsBottomSheetViewController.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Views/Settings/SettingsViewController.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Views/Settings/SettingsViewController.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Views/ThankYou/ThankYouVC.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Views/ThankYou/ThankYouVC.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NimbblSampleApp/Views/ViewController.swift" beforeDir="false" afterPath="$PROJECT_DIR$/NimbblSampleApp/Views/ViewController.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/Podfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/Users/sandeepyadav/Documents/nimbbl_repos/sample-apps/nimbbl_ios_sample_app" value="3GwIdceXBp4JiLuMx3QU29grUUi" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "SanNimbbl"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/nimbbl-tech/nimbbl_ios_sample_app.git",
+    "accountId": "3d43776b-a09b-4ea7-b0d2-6ee434f80b8b"
+  }
+}]]></component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="Studio" />
+    <option name="majorVersion" value="2025" />
+    <option name="microVersion" value="4" />
+    <option name="minorVersion" value="3" />
+    <option name="patchVersion" value="6" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3GwIdceXBp4JiLuMx3QU29grUUi" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/sandeepyadav/Documents/nimbbl_repos/sample-apps/nimbbl_ios_sample_app",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="711e9c75-a0a9-4a24-af96-4674672aa6ed" name="Changes" comment="" />
+      <created>1784876294337</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1784876294337</updated>
+    </task>
+    <servers />
+  </component>
+</project>
