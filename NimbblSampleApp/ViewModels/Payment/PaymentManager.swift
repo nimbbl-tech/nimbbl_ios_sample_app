@@ -248,7 +248,7 @@ class PaymentManager {
         case .brandLogo:
             return "2"
         case .brandName:
-            return "3"
+            return "7"
         }
     }
 
