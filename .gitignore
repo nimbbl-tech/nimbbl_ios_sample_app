@@ -16,3 +16,6 @@ Pods/
 # Swift Package Manager (local build artifacts)
 .build/
 .swiftpm/
+
+# JetBrains IDE
+.idea/

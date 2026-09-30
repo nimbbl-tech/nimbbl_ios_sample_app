@@ -57,6 +57,12 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     var paymentCustomisationBottomConstraint: NSLayoutConstraint?
     var subPaymentLabelHeightConstraint: NSLayoutConstraint?
     var subPaymentButtonHeightConstraint: NSLayoutConstraint?
+    // UPI app dropdown — third row, shown only when Payment=UPI + Sub=Intent.
+    // Mirrors Android `spnUpiApps` spinner visibility logic.
+    var upiAppLabel = UILabel()
+    let upiAppButton = UIButton(type: .system)
+    var upiAppLabelHeightConstraint: NSLayoutConstraint?
+    var upiAppButtonHeightConstraint: NSLayoutConstraint?
     // Removed: var contentViewMinHeightConstraint: NSLayoutConstraint?
 
     // MARK: - View Lifecycle
@@ -331,6 +337,30 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         subPaymentButton.isHidden = true
         view.addSubview(subPaymentButton)
         view.bringSubviewToFront(subPaymentButton)
+
+        // UPI app dropdown — shown only when Payment=UPI + Sub=Intent (Android `spnUpiApps`).
+        upiAppLabel.text = TextConstants.upiAppTitle
+        upiAppLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
+        upiAppLabel.textColor = .label
+        upiAppLabel.translatesAutoresizingMaskIntoConstraints = false
+        upiAppLabel.isHidden = true
+        paymentCustomisationView.addSubview(upiAppLabel)
+
+        upiAppButton.setTitle("", for: .normal)
+        upiAppButton.setTitleColor(.label, for: .normal)
+        upiAppButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
+        upiAppButton.backgroundColor = .secondarySystemBackground
+        upiAppButton.layer.cornerRadius = 10
+        upiAppButton.layer.borderWidth = 1
+        upiAppButton.layer.borderColor = UIColor.separator.cgColor
+        upiAppButton.contentHorizontalAlignment = .left
+        upiAppButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+        upiAppButton.addTarget(self, action: #selector(upiAppTapped), for: .touchUpInside)
+        upiAppButton.isUserInteractionEnabled = true
+        upiAppButton.isHidden = true
+        upiAppButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(upiAppButton)
+        view.bringSubviewToFront(upiAppButton)
         
         // User details
         contentView.addSubview(userDetailsView)
@@ -464,13 +494,9 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         view.addSubview(headerCustomisationButton)
         view.bringSubviewToFront(headerCustomisationButton)
 
-        paymentOptionsWithIcons = [
-            IconWithName(icon: UIImage(systemName: "square.grid.2x2"), name: "all payments modes"),
-            IconWithName(icon: UIImage(systemName: "building.columns"), name: "netbanking"),
-            IconWithName(icon: UIImage(systemName: "wallet.pass"), name: "wallet"),
-            IconWithName(icon: UIImage(systemName: "creditcard"), name: "card"),
-            IconWithName(icon: UIImage(systemName: "qrcode"), name: "upi")
-        ]
+        paymentOptionsWithIcons = paymentManager.paymentOptions.map {
+            IconWithName(icon: $0.icon, name: $0.name)
+        }
         selectedPaymentOption = paymentOptionsWithIcons.first
         // Remove label text from paymentCustomisationButton and subPaymentButton
         paymentCustomisationButton.setTitle("", for: .normal)
@@ -641,7 +667,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         
         // Payment customisation
         // Remove fixed height, use single bottom constraint
-        paymentCustomisationBottomConstraint = paymentCustomisationView.bottomAnchor.constraint(equalTo: subPaymentButton.bottomAnchor)
+        paymentCustomisationBottomConstraint = paymentCustomisationView.bottomAnchor.constraint(equalTo: upiAppButton.bottomAnchor)
         paymentCustomisationBottomConstraint?.priority = .required
         paymentCustomisationBottomConstraint?.isActive = true
         
@@ -659,7 +685,15 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
             subPaymentLabel.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
             subPaymentButton.topAnchor.constraint(equalTo: subPaymentLabel.bottomAnchor, constant: 4),
             subPaymentButton.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
-            subPaymentButton.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor)
+            subPaymentButton.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor),
+            // UPI app dropdown — anchored below sub-payment button. Heights collapse to 0
+            // when hidden (Payment != UPI or Sub != Intent), matching Android `spnUpiApps`.
+            upiAppLabel.topAnchor.constraint(equalTo: subPaymentButton.bottomAnchor, constant: 16),
+            upiAppLabel.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
+            upiAppLabel.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor),
+            upiAppButton.topAnchor.constraint(equalTo: upiAppLabel.bottomAnchor, constant: 4),
+            upiAppButton.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
+            upiAppButton.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor)
         ])
         
         // Add and store height constraints for sub payment label and button
@@ -667,6 +701,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         subPaymentLabelHeightConstraint?.isActive = true
         subPaymentButtonHeightConstraint = subPaymentButton.heightAnchor.constraint(equalToConstant: 44)
         subPaymentButtonHeightConstraint?.isActive = true
+        // UPI app dropdown heights — start at 0 (collapsed); expanded by updateUpiAppUI().
+        upiAppLabelHeightConstraint = upiAppLabel.heightAnchor.constraint(equalToConstant: 0)
+        upiAppLabelHeightConstraint?.isActive = true
+        upiAppButtonHeightConstraint = upiAppButton.heightAnchor.constraint(equalToConstant: 0)
+        upiAppButtonHeightConstraint?.isActive = true
         
         // User details
         NSLayoutConstraint.activate([
@@ -713,7 +752,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     // MARK: - Actions
     @objc func settingsTapped() {
         if DebugConfig.debugPrintEnabled {
-        print("=== SETTINGS BUTTON TAPPED! ===")
+        DebugLog.log("=== SETTINGS BUTTON TAPPED! ===")
         }
         let settingsVC = SettingsViewController()
         let navController = UINavigationController(rootViewController: settingsVC)
@@ -722,7 +761,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
     @objc func currencyTapped() {
         if DebugConfig.debugPrintEnabled {
-        print("=== CURRENCY BUTTON TAPPED! ===")
+        DebugLog.log("=== CURRENCY BUTTON TAPPED! ===")
         }
         let alert = UIAlertController(title: TextConstants.selectCurrency, message: nil, preferredStyle: .actionSheet)
         for currency in paymentManager.currencyOptions {
@@ -741,7 +780,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         paymentManager.orderLineItemsEnabled = personalisedOptionsSwitch.isOn
         paymentManager.isPersonalisedOptionsEnabled = personalisedOptionsSwitch.isOn // Keep header options in sync
         if DebugConfig.debugPrintEnabled {
-            print("[DEBUG] orderLineItemsEnabled set to \(personalisedOptionsSwitch.isOn)")
+            DebugLog.log("[DEBUG] orderLineItemsEnabled set to \(personalisedOptionsSwitch.isOn)")
         }
         if paymentManager.orderLineItemsEnabled {
             paymentManager.selectedHeader = HeaderOption.brandNameAndLogo
@@ -752,7 +791,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
     @objc func headerCustomisationTapped() {
         if DebugConfig.debugPrintEnabled {
-        print("=== HEADER CUSTOMISATION BUTTON TAPPED! ===")
+        DebugLog.log("=== HEADER CUSTOMISATION BUTTON TAPPED! ===")
         }
         let colorIndicators: [UIColor] = [
             UIColor(red: 0.13, green: 0.15, blue: 0.30, alpha: 1), // #22274C
@@ -767,7 +806,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 self?.paymentManager.selectedHeader = newHeader
             }
             if DebugConfig.debugPrintEnabled {
-                print("[DEBUG] Header option selected: \(selected)")
+                DebugLog.log("[DEBUG] Header option selected: \(selected)")
             }
             self?.updateHeaderOptionsUI()
         }
@@ -775,7 +814,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
     @objc func paymentCustomisationTapped() {
         if DebugConfig.debugPrintEnabled {
-        print("=== PAYMENT CUSTOMISATION BUTTON TAPPED! ===")
+        DebugLog.log("=== PAYMENT CUSTOMISATION BUTTON TAPPED! ===")
         }
         let bottomSheet = PaymentOptionsBottomSheetViewController(
             options: paymentOptionsWithIcons,
@@ -797,6 +836,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 self?.subPaymentOptionsWithIcons = self?.paymentManager.upiSubPaymentTypeList.map { ImageWithName(imageName: $0.imageName, name: $0.name) } ?? []
                 self?.selectedSubPaymentOption = self?.subPaymentOptionsWithIcons.first
                 self?.paymentManager.selectedSubPaymentOption = self?.selectedSubPaymentOption // Sync
+            } else if selected.name.lowercased() == "emi" {
+                self?.subPaymentOptionsWithIcons = self?.paymentManager.emiSubPaymentTypeList.map { ImageWithName(imageName: $0.imageName, name: $0.name) } ?? []
+                self?.selectedSubPaymentOption = self?.subPaymentOptionsWithIcons.first
+                self?.paymentManager.selectedSubPaymentOption = self?.selectedSubPaymentOption
+                self?.paymentManager.selectedEmiOption = self?.paymentManager.emiSubPaymentTypeList.first
             } else {
                 self?.subPaymentOptionsWithIcons = []
                 self?.selectedSubPaymentOption = nil
@@ -809,16 +853,25 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
     @objc func subPaymentTapped() {
         if DebugConfig.debugPrintEnabled {
-        print("Sub payment button tapped")
+        DebugLog.log("Sub payment button tapped")
         }
         guard !subPaymentOptionsWithIcons.isEmpty else { return }
         let bottomSheet = SubPaymentOptionsBottomSheetViewController(
             options: subPaymentOptionsWithIcons,
             selectedOption: selectedSubPaymentOption?.name
         ) { [weak self] selected in
-            self?.selectedSubPaymentOption = selected
-            self?.paymentManager.selectedSubPaymentOption = selected // Sync with PaymentManager
-            self?.updateSubPaymentButtonUI()
+            guard let self = self else { return }
+            self.selectedSubPaymentOption = selected
+            self.paymentManager.selectedSubPaymentOption = selected // Sync with PaymentManager
+            if self.selectedPaymentOption?.name.lowercased() == "emi" {
+                self.paymentManager.selectedEmiOption = self.paymentManager.emiSubPaymentTypeList.first {
+                    $0.name == selected.name
+                }
+            }
+            self.updateSubPaymentButtonUI()
+            // Re-evaluate UPI app row visibility — shows the dropdown on the main screen
+            // when Payment=UPI + Sub=Intent (Android `spnUpiApps` parity).
+            self.updateUpiAppUI()
         }
         present(bottomSheet, animated: true)
     }
@@ -839,18 +892,18 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     
     @objc func payNowTapped() {
         if DebugConfig.debugPrintEnabled {
-            print("[DEBUG] payNowTapped called")
+            DebugLog.log("[DEBUG] payNowTapped called")
         }
         // Validate user input
         guard paymentManager.validateUserDetails(), paymentManager.validateAmount() else {
             if DebugConfig.debugPrintEnabled {
-                print("[DEBUG] Validation failed")
+                DebugLog.log("[DEBUG] Validation failed")
             }
             showAlert(title: TextConstants.validationErrorTitle, message: TextConstants.validationErrorMessage)
             return
         }
         if DebugConfig.debugPrintEnabled {
-            print("[DEBUG] Validation passed")
+            DebugLog.log("[DEBUG] Validation passed")
         }
         
         // Check app mode to determine which SDK to use
@@ -867,19 +920,38 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     
     private func startWebViewPayment() {
         payNowButton.isEnabled = false
-        // Set environment URL in webview SDK before order creation
+        // 1. Resolve configured base URL from Settings — Prod / Pre-Prod / QA-edited.
         let env = UserDefaults.standard.selectedEnvironment
-        var envUrl: String? = nil
-        if env == "QA" {
-            envUrl = UserDefaults.standard.string(forKey: "qaEnvironmentUrl") ?? "https://api-qa1.nimbbl.tech"
+        var configuredBaseUrl: String? = nil
+        if env == Environment.qa.rawValue {
+            // Use the user-edited QA URL, falling back to qa3 (Android BASE_URL_QA3).
+            configuredBaseUrl = UserDefaults.standard.qaEnvironmentUrl
+            if configuredBaseUrl?.isEmpty != false { configuredBaseUrl = EnvironmentUrls.qa }
         } else {
             switch env {
-            case "Prod": envUrl = EnvironmentUrls.prod
-            case "Pre-Prod": envUrl = EnvironmentUrls.preProd
-            default: envUrl = EnvironmentUrls.prod
+            case Environment.prod.rawValue: configuredBaseUrl = EnvironmentUrls.prod
+            case Environment.preProd.rawValue: configuredBaseUrl = EnvironmentUrls.preProd
+            default: configuredBaseUrl = EnvironmentUrls.prod
             }
         }
-        NimbblCheckoutSDK.shared.environmentUrl = envUrl
+
+        // 2. SDK env URL — keeps raw IP for WebView (Android `sdkEnvUrl` branch).
+        let sdkEnvUrl = SampleShopAPIUtils.resolveSdkEnvironmentUrl(configuredBaseUrl: configuredBaseUrl)
+        NimbblCheckoutSDK.shared.environmentUrl = sdkEnvUrl
+
+        // 3. SDK debug-logging flag from Settings.
+        NimbblCheckoutSDK.shared.setDebugLoggingEnabled(
+            NSNumber(value: UserDefaults.standard.debugLogsEnabled)
+        )
+
+        // 4. Branch order creation: access-token path uses Core API v3 directly.
+        let accessToken = UserDefaults.standard.accessToken.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !accessToken.isEmpty {
+            createOrderViaV3(configuredBaseUrl: configuredBaseUrl ?? "", accessToken: accessToken)
+            return
+        }
+
+        // 5. No access token → existing shop-proxy path.
         paymentManager.createOrder { [weak self] result in
             DispatchQueue.main.async {
                 self?.payNowButton.isEnabled = true
@@ -902,22 +974,42 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                         "subPayment": self?.paymentManager.selectedSubPaymentOption?.name,
                         "isPersonalisedOptionsOn": self?.paymentManager.orderLineItemsEnabled
                     ]
-                    print("[DEBUG] Selected values for checkout: \(selectedValues)")
+                    DebugLog.log("[DEBUG] Selected values for checkout: \(selectedValues)")
                 }
                 let paymentModeCode = self?.paymentManager.getPaymentModeCode()
                 let paymentFlow: String? = (paymentModeCode == "UPI")
                     ? self?.paymentManager.getPaymentFlow(upiModeName: self?.paymentManager.selectedSubPaymentOption?.name ?? "")
                     : nil
+                // UPI intent app code (mirrors Android `getUpiAppCode`) — only when payment=UPI + sub=intent.
+                let upiAppCode = self?.paymentManager.selectedUpiApp?.code
+                // EMI code (mirrors Android `getEMICode`) — only when payment=EMI.
+                let emiCode = self?.paymentManager.selectedEmiOption?.code
                 let options = NimbblCheckoutOptions(
+                    packageName: nil,
+                    amount: 0,
+                    currency: self?.paymentManager.selectedCurrency,
+                    name: nil,
+                    description: nil,
+                    image: nil,
+                    userInfo: nil,
+                    subMerchantId: nil,
                     orderToken: token,
                     paymentModeCode: paymentModeCode,
-                    bankCode: self?.paymentManager.getSubPaymentModeCode(),
-                    walletCode: self?.paymentManager.getSubPaymentModeCode(),
-                    paymentFlow: paymentFlow
+                    // bankCode / walletCode are filtered per-payment-mode (mirror Android):
+                    // - bankCode is non-nil only when payment=netbanking
+                    // - walletCode is non-nil only when payment=wallet
+                    // Otherwise nil, so the SDK URL builder won't append spurious params
+                    // (this fixes the previous bug where EMI/UPI selections also injected
+                    //  `&bank_code=` and `&wallet_code=` into the WebView URL).
+                    bankCode: self?.paymentManager.getBankCode(),
+                    walletCode: self?.paymentManager.getWalletCode(),
+                    paymentFlow: paymentFlow,
+                    upiAppCode: (upiAppCode?.isEmpty == false) ? upiAppCode : nil,
+                    emiCode: (emiCode?.isEmpty == false) ? emiCode : nil
                 )
                 if DebugConfig.debugPrintEnabled {
-                    print("[DEBUG] Checkout options: \(options)")
-                    print("Selected header: \(self?.paymentManager.selectedHeader ?? .brandName), Product ID: \(self?.paymentManager.getProductIdForHeader() ?? "")")
+                    DebugLog.log("[DEBUG] Checkout options: \(options)")
+                    DebugLog.log("Selected header: \(self?.paymentManager.selectedHeader ?? .brandName), Product ID: \(self?.paymentManager.getProductIdForHeader() ?? "")")
                 }
                 
                 // Use delegate-based checkout
@@ -926,7 +1018,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 }
             case .failure(let error):
                 if DebugConfig.debugPrintEnabled {
-                    print("[DEBUG] Order creation failed: \(error.localizedDescription)")
+                    DebugLog.log("[DEBUG] Order creation failed: \(error.localizedDescription)")
                 }
                 
                 // Extract API error message if available
@@ -945,6 +1037,107 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         }
     }
 
+    // MARK: - Core API v3 path (mirrors Android `createOrderV3Request`)
+    /**
+     * When the user has configured an access token in Settings, the sample app
+     * calls Core API v3 `/api/v3/create-order` directly (Bearer-authenticated)
+     * instead of the shop-proxy /create-shop endpoint.
+     *
+     * Strictly mirrors Android's branch in `OrderCreateActivity.setListeners()`.
+     */
+    private func createOrderViaV3(configuredBaseUrl: String, accessToken: String) {
+        // The v3 endpoint must hit a public Nimbbl host even when WebView env is an IP.
+        // `resolveShopBaseUrl` does the IP→qa3 fallback that matches Android exactly.
+        let apiBaseUrl = SampleShopAPIUtils.resolveShopBaseUrl(configuredBaseUrl: configuredBaseUrl)
+
+        // Pull the same inputs the shop-proxy path uses.
+        let amountStr = (paymentManager.amountValue as NSString).floatValue
+        let totalAmount = Int(amountStr) // matches Android: Integer.parseInt(amount.text)
+        let firstName = paymentManager.userName
+        let email = paymentManager.userEmail
+        let mobile = paymentManager.userNumber
+        let productId = paymentManager.getProductIdForHeader()
+        let paymentMode = paymentManager.getPaymentModeCode() ?? ""
+        let subPaymentMode = paymentManager.getSubPaymentModeCode()
+
+        OrderV3Client.create(
+            apiBaseUrl: apiBaseUrl,
+            accessToken: accessToken,
+            totalAmount: totalAmount,
+            emailId: email,
+            firstName: firstName,
+            mobileNumber: mobile,
+            productId: productId,
+            paymentMode: paymentMode,
+            subPaymentMode: subPaymentMode
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.payNowButton.isEnabled = true
+            }
+            switch result {
+            case .success(let v3):
+                let paymentModeCode = self?.paymentManager.getPaymentModeCode()
+                let paymentFlow: String? = (paymentModeCode == "UPI")
+                    ? self?.paymentManager.getPaymentFlow(upiModeName: self?.paymentManager.selectedSubPaymentOption?.name ?? "")
+                    : nil
+                // Derive UPI app code (Payment=UPI + Sub=Intent + picked app) and EMI code
+                // (Payment=EMI + picked sub-option) via PaymentManager helpers.
+                let upiAppCode = self?.paymentManager.getUpiAppCode()
+                let emiCode = self?.paymentManager.getEMICode()
+                let options = NimbblCheckoutOptions(
+                    packageName: nil,
+                    amount: 0,
+                    currency: self?.paymentManager.selectedCurrency,
+                    name: nil,
+                    description: nil,
+                    image: nil,
+                    userInfo: nil,
+                    subMerchantId: nil,
+                    orderToken: v3.token,
+                    paymentModeCode: paymentModeCode,
+                    // bankCode / walletCode are filtered per-payment-mode (mirror Android):
+                    // - bankCode is non-nil only when payment=netbanking
+                    // - walletCode is non-nil only when payment=wallet
+                    // Otherwise nil, so the SDK URL builder won't append spurious params
+                    // (this fixes the previous bug where EMI/UPI selections also injected
+                    //  `&bank_code=` and `&wallet_code=` into the WebView URL).
+                    bankCode: self?.paymentManager.getBankCode(),
+                    walletCode: self?.paymentManager.getWalletCode(),
+                    paymentFlow: paymentFlow,
+                    upiAppCode: (upiAppCode?.isEmpty == false) ? upiAppCode : nil,
+                    emiCode: (emiCode?.isEmpty == false) ? emiCode : nil
+                )
+                if DebugConfig.debugPrintEnabled {
+                    DebugLog.log("[DEBUG] v3 checkout options: \(options)")
+                }
+                DispatchQueue.main.async {
+                    NimbblCheckoutSDK.shared.checkout(from: self!, options: options)
+                }
+
+            case .failure(let error):
+                let message: String
+                switch error {
+                case .invalidURL(let url): message = "Invalid v3 URL: \(url)"
+                case .http(let status, let body):
+                    // Try to parse Nimbbl error envelope, matching Android.
+                    if let bodyStr = body,
+                       let bodyData = bodyStr.data(using: .utf8),
+                       let json = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any],
+                       let err = json["error"] as? [String: Any],
+                       let consumer = err["nimbbl_consumer_message"] as? String {
+                        message = consumer
+                    } else {
+                        message = "v3 create-order failed (HTTP \(status))"
+                    }
+                case .network(let e): message = "Network error: \(e.localizedDescription)"
+                case .decoding(let s): message = s
+                }
+                DispatchQueue.main.async {
+                    self?.showAlert(title: TextConstants.orderErrorTitle, message: message)
+                }
+            }
+        }
+    }
 
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -995,7 +1188,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         updateSubPaymentUI()
     }
     func updateSubPaymentUI() {
-        let shouldShow = ["netbanking", "upi", "wallet"].contains(selectedPaymentOption?.name.lowercased() ?? "")
+        let shouldShow = ["netbanking", "upi", "wallet", "emi"].contains(selectedPaymentOption?.name.lowercased() ?? "")
         // Always keep height constraints active
         subPaymentLabelHeightConstraint?.isActive = true
         subPaymentButtonHeightConstraint?.isActive = true
@@ -1007,6 +1200,130 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         if shouldShow {
             updateSubPaymentButtonUI()
         }
+        // The UPI app row only shows when payment=UPI + sub=intent — re-evaluate now.
+        updateUpiAppUI()
+    }
+
+    /// Show/hide the UPI app dropdown based on Payment=UPI + Sub=Intent.
+    /// Mirrors Android `spnUpiApps` spinner visibility logic.
+    func updateUpiAppUI() {
+        let paymentName = selectedPaymentOption?.name.lowercased() ?? ""
+        let subName = selectedSubPaymentOption?.name.lowercased() ?? ""
+        let shouldShow = (paymentName == "upi") && (subName == "intent")
+
+        upiAppLabelHeightConstraint?.isActive = true
+        upiAppButtonHeightConstraint?.isActive = true
+        upiAppLabel.isHidden = !shouldShow
+        upiAppButton.isHidden = !shouldShow
+        upiAppLabelHeightConstraint?.constant = shouldShow ? 20 : 0
+        upiAppButtonHeightConstraint?.constant = shouldShow ? 44 : 0
+
+        if shouldShow {
+            updateUpiAppButtonUI()
+        }
+        view.layoutIfNeeded()
+    }
+
+    /// Sync the UPI app button — builds a custom container with brand icon + label
+    /// + dropdown chevron, mirroring the visual pattern used by
+    /// `updateSubPaymentButtonUI()` and `updatePaymentCustomisationButtonUI()`.
+    /// Font is **Gordita-Medium 14pt** to match the other dropdowns exactly.
+    ///
+    /// When nothing is selected yet, shows the generic `upiImg` placeholder so the
+    /// button never appears empty.
+    func updateUpiAppButtonUI() {
+        let selected = paymentManager.selectedUpiApp
+        let title = selected?.name ?? "Select UPI app"
+
+        // Clear any previously-added subviews (matches the other update methods).
+        upiAppButton.subviews.forEach {
+            if $0 != upiAppButton.titleLabel {
+                $0.removeFromSuperview()
+            }
+        }
+        // Reset any image/insets from earlier implementations.
+        upiAppButton.setTitle("", for: .normal)
+        upiAppButton.setImage(nil, for: .normal)
+        upiAppButton.imageEdgeInsets = .zero
+        upiAppButton.titleEdgeInsets = .zero
+
+        // Resolve which asset to display. Brand assets render in original colors
+        // (NOT template) so brand logos keep their colors. Falls back to `upiImg`
+        // when the brand asset isn't bundled (Google Pay / Paytm until you drop in PNGs).
+        let assetCandidates: [String]
+        if let assetName = selected?.imageName {
+            assetCandidates = [assetName, "upiImg"]
+        } else {
+            assetCandidates = ["upiImg"]
+        }
+        let iconImage = assetCandidates
+            .lazy
+            .compactMap { UIImage(named: $0)?.withRenderingMode(.alwaysOriginal) }
+            .first
+
+        // Build the same icon + label + chevron container the other dropdowns use.
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        let iconView = UIImageView(image: iconImage)
+        iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(iconView)
+
+        let label = UILabel()
+        label.text = title
+        label.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .label
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+
+        // Dropdown chevron at the trailing edge — exactly like subPaymentButton.
+        let dropdownIcon = UIImageView(image: UIImage(systemName: "chevron.down"))
+        dropdownIcon.contentMode = .scaleAspectFit
+        dropdownIcon.translatesAutoresizingMaskIntoConstraints = false
+        dropdownIcon.tintColor = .label
+        upiAppButton.addSubview(dropdownIcon)
+
+        NSLayoutConstraint.activate([
+            iconView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
+            iconView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 20),
+            iconView.heightAnchor.constraint(equalToConstant: 20),
+            label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 8),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: container.trailingAnchor, constant: -32),
+            container.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        upiAppButton.addSubview(container)
+        NSLayoutConstraint.activate([
+            container.leadingAnchor.constraint(equalTo: upiAppButton.leadingAnchor),
+            container.trailingAnchor.constraint(equalTo: upiAppButton.trailingAnchor),
+            container.topAnchor.constraint(equalTo: upiAppButton.topAnchor),
+            container.bottomAnchor.constraint(equalTo: upiAppButton.bottomAnchor),
+            dropdownIcon.trailingAnchor.constraint(equalTo: upiAppButton.trailingAnchor, constant: -8),
+            dropdownIcon.centerYAnchor.constraint(equalTo: upiAppButton.centerYAnchor),
+            dropdownIcon.widthAnchor.constraint(equalToConstant: 16),
+            dropdownIcon.heightAnchor.constraint(equalToConstant: 16)
+        ])
+        container.isUserInteractionEnabled = false
+        iconView.isUserInteractionEnabled = false
+        dropdownIcon.isUserInteractionEnabled = false
+    }
+
+    @objc func upiAppTapped() {
+        let options = paymentManager.upiIntentAppOptions
+        let picker = UpiAppPickerBottomSheetViewController(
+            options: options,
+            selectedCode: paymentManager.selectedUpiApp?.code
+        ) { [weak self] selected in
+            self?.paymentManager.selectedUpiApp = selected
+            self?.updateUpiAppButtonUI()
+            if DebugConfig.debugPrintEnabled {
+                DebugLog.log("[DEBUG] UPI app picked: \(selected.name) (code: \(selected.code))")
+            }
+        }
+        present(picker, animated: true)
     }
     func updateUserDetailsUI() {
         userDetailsStackView.isHidden = !paymentManager.userDetailsChecked
@@ -1171,25 +1488,25 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
 
     @objc private func dismissKeyboard() {
         if DebugConfig.debugPrintEnabled {
-        print("Dismiss keyboard gesture triggered")
+        DebugLog.log("Dismiss keyboard gesture triggered")
         }
         view.endEditing(true)
     }
     
     // MARK: - NimbblCheckoutSDKDelegate
     func onCheckoutResponse(data: [AnyHashable: Any]) {
-        print("[SAMPLE APP] Checkout response received: \(data)")
+        DebugLog.log("[SAMPLE APP] Checkout response received: \(data)")
         
 
         // Dismiss any presented view controllers (e.g., checkout webview)
         if let presented = self.presentedViewController {
-            print("[SAMPLE APP] Dismissing presented view controller")
+            DebugLog.log("[SAMPLE APP] Dismissing presented view controller")
             presented.dismiss(animated: false) {
-                print("[SAMPLE APP] Presented view controller dismissed, showing ThankYou page")
+                DebugLog.log("[SAMPLE APP] Presented view controller dismissed, showing ThankYou page")
                 self.showThankYouVC(data: data)
             }
         } else {
-            print("[SAMPLE APP] No presented view controller, showing ThankYou page directly")
+            DebugLog.log("[SAMPLE APP] No presented view controller, showing ThankYou page directly")
             self.showThankYouVC(data: data)
         }
     }
@@ -1199,11 +1516,11 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         
         // Pass the data directly to ThankYouVC
         thankYouVC.paymentData = data
-        print("[SAMPLE APP] Data passed to ThankYouVC: \(data)")
+        DebugLog.log("[SAMPLE APP] Data passed to ThankYouVC: \(data)")
         
         thankYouVC.modalPresentationStyle = .fullScreen
         self.present(thankYouVC, animated: true) {
-            print("[SAMPLE APP] ThankYou page presented successfully")
+            DebugLog.log("[SAMPLE APP] ThankYou page presented successfully")
         }
     }
     

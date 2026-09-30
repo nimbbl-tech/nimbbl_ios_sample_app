@@ -9,6 +9,10 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Pipe capture is unsafe under Xcode (SIGPIPE during checkout). Use DebugLog.log instead.
+        if !AppLogStream.isXcodeDebugSession {
+            AppLogStream.shared.install()
+        }
         // Window setup moved to SceneDelegate for UIScene lifecycle adoption (required on iOS 27).
         return true
     }

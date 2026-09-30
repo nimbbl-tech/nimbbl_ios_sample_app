@@ -85,7 +85,7 @@ class HeaderOptionsBottomSheetViewController: UIViewController, UITableViewDeleg
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedOption = options[indexPath.row]
         if DebugConfig.debugPrintEnabled {
-            print("[DEBUG] BottomSheet header option selected: \(selectedOption)")
+            DebugLog.log("[DEBUG] BottomSheet header option selected: \(selectedOption)")
         }
         dismiss(animated: true) {
             self.completion(selectedOption)
