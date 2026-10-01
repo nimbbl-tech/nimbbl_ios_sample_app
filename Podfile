@@ -8,9 +8,6 @@ platform :ios, '15.0'
 #
 # For local development against the pod repos, flip USE_LOCAL_POD_REPOS to true.
 USE_LOCAL_POD_REPOS = false
-VERSION = '2.1.0-alpha.1'
-CORE_POD_GIT    = 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_pod.git'
-WEBVIEW_POD_GIT = 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_pod.git'
 
 target 'NimbblSampleApp' do
   use_frameworks!
@@ -20,10 +17,12 @@ target 'NimbblSampleApp' do
     pod 'nimbbl_mobile_kit_ios_core_api_sdk', :path => '../../client-sdks/nimbbl_mobile_kit_ios_core_api_pod'
     pod 'nimbbl_mobile_kit_ios_webview_sdk',  :path => '../../client-sdks/nimbbl_mobile_kit_ios_webview_pod'
   else
-    # Release: binary pods by git tag (Core must be given explicitly since the
-    # WebView podspec depends on it and it is not on the trunk).
-    pod 'nimbbl_mobile_kit_ios_core_api_sdk', :git => CORE_POD_GIT,    :tag => VERSION
-    pod 'nimbbl_mobile_kit_ios_webview_sdk',  :git => WEBVIEW_POD_GIT, :tag => VERSION
+    # Release: binary pods by git tag. Core must be given explicitly since the
+    # WebView podspec depends on it and it is not on the trunk. Core and WebView
+    # version independently — set each tag to the version it actually published
+    # (Core's tag must match the version WebView was built against).
+    pod 'nimbbl_mobile_kit_ios_core_api_sdk', :git => 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_pod.git', :tag => '2.1.0-alpha.1'
+    pod 'nimbbl_mobile_kit_ios_webview_sdk',  :git => 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_pod.git',  :tag => '2.1.0-alpha.1'
   end
 end
 
