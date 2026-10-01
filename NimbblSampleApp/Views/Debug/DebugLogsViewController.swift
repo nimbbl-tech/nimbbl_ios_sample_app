@@ -2,7 +2,7 @@
 Created by Sandeep Y. on 15/05/26.
 Copyright (c) 2026 Bigital Technologies Pvt. Ltd. All rights reserved.
 
-Live log viewer for the sample app. Mirrors Android `DebugLogsActivity`.
+Live log viewer for the sample app.
 App bar matches `SettingsViewController` (black header, back chevron, title).
 */
 

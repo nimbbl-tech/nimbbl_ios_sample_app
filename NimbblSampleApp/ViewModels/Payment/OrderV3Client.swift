@@ -2,7 +2,6 @@
 Created by Sandeep Y. on 15/05/26.
 Copyright (c) 2026 Bigital Technologies Pvt. Ltd. All rights reserved.
 
-Strictly mirrors Android `OrderCreateActivity.createOrderV3Request(...)`.
 Hits `{baseUrl}/api/v3/create-order` with the `Bearer <accessToken>` header
 when a Core API token is configured. Used by `OrderCreator` to branch away
 from the shop-proxy path.
@@ -70,7 +69,7 @@ enum OrderV3Client {
             "invoice_id": invoiceId
         ]
 
-        // User object — only included when mobile number is present (matches Android).
+        // User object — only included when mobile number is present.
         if !mobileNumber.isEmpty {
             var user: [String: Any] = [
                 "first_name": firstName,
@@ -82,7 +81,7 @@ enum OrderV3Client {
             payload["user"] = user
         }
 
-        // Order line items — Android always includes 1 item, matching that behavior here.
+        // Order line items — always includes 1 item.
         let lineItemSku = productId.isEmpty ? "item_\(invoiceId)" : productId
         payload["order_line_items"] = [[
             "sku_id": lineItemSku,
@@ -110,7 +109,7 @@ enum OrderV3Client {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.httpBody = body
 
-        // Structured request log — mirrors Android `logSampleApiRequest("OrderCreate-v3", ...)`.
+        // Structured request log.
         SampleApiLogger.logRequest(
             tag: "OrderCreate-v3",
             method: "POST",
@@ -147,7 +146,7 @@ enum OrderV3Client {
                 return
             }
             let bodyString = data.flatMap { String(data: $0, encoding: .utf8) }
-            // Mirror Android: log every response regardless of status code.
+            // Log every response regardless of status code.
             SampleApiLogger.logResponse(
                 tag: "OrderCreate-v3",
                 code: http.statusCode,

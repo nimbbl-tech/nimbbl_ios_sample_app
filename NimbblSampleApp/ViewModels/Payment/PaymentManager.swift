@@ -24,14 +24,14 @@ struct SubPaymentOption {
 class PaymentManager {
     static let shared = PaymentManager()
     
-    // MARK: - Payment Options (mirrors Android `payment_type` string-array)
+    // MARK: - Payment Options
     var paymentOptions: [PaymentOption] = [
         PaymentOption(icon: UIImage(systemName: "square.grid.2x2"), name: "all payments modes", code: "all"),
         PaymentOption(icon: UIImage(systemName: "building.columns"), name: "netbanking", code: "netbanking"),
         PaymentOption(icon: UIImage(systemName: "wallet.pass"), name: "wallet", code: "wallet"),
         PaymentOption(icon: UIImage(systemName: "creditcard"), name: "card", code: "card"),
         PaymentOption(icon: UIImage(systemName: "qrcode"), name: "upi", code: "upi"),
-        // EMI enforcement — matches Android AppConstants string "emi"
+        // EMI enforcement
         PaymentOption(icon: UIImage(systemName: "calendar"), name: "emi", code: "emi")
     ]
     
@@ -56,21 +56,19 @@ class PaymentManager {
     ]
 
     /// UPI intent app picker — shown only when Payment=UPI + Sub=Intent.
-    /// Mirrors Android `sub_payment_type_upi_intent_apps` + `getUpiAppCode`.
     ///
     /// imageName references brand-specific assets where available, fallback to
     /// `upiImg` otherwise. To get distinct logos for Google Pay and Paytm,
-    /// add `gpayImg.imageset` and `paytmImg.imageset` to Assets.xcassets
-    /// (Android has gpay.png + paytm.png drawables already — reuse those).
+    /// add `gpayImg.imageset` and `paytmImg.imageset` to Assets.xcassets.
     var upiIntentAppOptions: [SubPaymentOption] = [
         SubPaymentOption(imageName: "gpayImg",    name: "Google Pay", code: "gpay"),
         SubPaymentOption(imageName: "phonePeImg", name: "PhonePe",    code: "phonepeupi"),
         SubPaymentOption(imageName: "paytmImg",   name: "Paytm",      code: "paytmupi")
     ]
 
-    /// EMI sub-options — mirrors Android `sub_payment_type_emi` + `getEMICode`.
+    /// EMI sub-options.
     /// Note: the EMI sub-code is propagated via `NimbblCheckoutOptions.emiCode`,
-    /// NOT via `sub_payment_mode`, matching Android's behavior.
+    /// NOT via `sub_payment_mode`.
     var emiSubOptions: [SubPaymentOption] = [
         SubPaymentOption(imageName: "menuImg",  name: "all emis",        code: ""),
         SubPaymentOption(imageName: "menuImg",  name: "debit card emi",  code: "debit"),
@@ -140,7 +138,6 @@ class PaymentManager {
     }
 
     /// True iff a UPI app sub-picker should be visible — Payment=UPI + Sub=intent.
-    /// Mirrors Android's spinner-visibility condition in OrderCreateActivity.
     func shouldShowUpiAppPicker(payment: PaymentOption?, sub: SubPaymentOption?) -> Bool {
         guard let payment = payment, let sub = sub else { return false }
         return payment.code.lowercased() == "upi" && sub.code.lowercased() == "intent"
@@ -200,41 +197,40 @@ class PaymentManager {
     func createOrder(completion: @escaping (Result<String, Error>) -> Void) {
         let currency = selectedCurrency
         let amountString = amountValue
-        // Android parses amount as Int(amount.text). iOS amountValue is a String like
-        // "4.0" — use the same integer-truncation behavior.
+        // amountValue is a String like "4.0" — use integer-truncation to convert.
         let amountInt = Int(Double(amountString) ?? 0)
         let productId = getProductIdForHeader()
         let checkoutExperience = "redirect"
         let paymentMode = getPaymentModeCode() ?? ""
         let subPaymentMode = getSubPaymentModeCode() ?? ""
 
-        // Trim user inputs (Android trims via .ifEmpty { "" } pattern; iOS does the same).
+        // Trim user inputs.
         let trimmedName = userName.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedMobile = userNumber.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedEmail = userEmail.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Build request body. Order of keys mirrors Android `JSONObject.put(...)` sequence.
+        // Build request body.
         var requestBody: [String: Any] = [
             "currency": currency,
-            "amount": "\(amountInt)",                  // Android sends as string
+            "amount": "\(amountInt)",                  // sent as string
             "product_id": productId,
             "total_amount": amountInt,
             "amount_before_tax": amountInt,
             "tax": 0,
             "additional_charges": 0,
             "grand_total_amount": amountInt,
-            "order_line_items": true,                  // Bool — matches Android `put("order_line_items", true)`
+            "order_line_items": true,                  // Bool
             "checkout_experience": checkoutExperience,
-            "payment_mode": paymentMode.isEmpty ? "All" : paymentMode  // mirrors Android `paymentMode.ifEmpty { "All" }`
+            "payment_mode": paymentMode.isEmpty ? "All" : paymentMode
         ]
 
-        // sub_payment_mode — only included when non-empty (Android `if (!subPaymentMode.isNullOrEmpty())`)
+        // sub_payment_mode — only included when non-empty.
         if !subPaymentMode.isEmpty {
             requestBody["sub_payment_mode"] = subPaymentMode
         }
 
-        // User object — Android includes user ONLY when mobile_number is non-empty.
-        // When mobile is empty, Android still sends `"user": {}` (empty object).
+        // User object — included ONLY when mobile_number is non-empty.
+        // When mobile is empty, still send `"user": {}` (empty object).
         if !trimmedMobile.isEmpty {
             requestBody["user"] = [
                 "email": trimmedEmail,
@@ -242,10 +238,10 @@ class PaymentManager {
                 "mobile_number": trimmedMobile
             ]
         } else {
-            requestBody["user"] = [String: Any]()  // empty user object — matches Android `else { put("user", JSONObject()) }`
+            requestBody["user"] = [String: Any]()  // empty user object
         }
 
-        // order_line_item — singular key with array of 1, matching Android exactly.
+        // order_line_item — singular key with array of 1.
         let amountDouble = Double(amountInt)
         requestBody["order_line_item"] = [[
             "title": "Product",
@@ -283,7 +279,7 @@ class PaymentManager {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = body
 
-        // Structured request log — mirrors Android `logSampleApiRequest("OrderCreate-Shop", ...)`.
+        // Structured request log.
         SampleApiLogger.logRequest(
             tag: "OrderCreate-Shop",
             method: "POST",
@@ -303,7 +299,7 @@ class PaymentManager {
                 DispatchQueue.main.async { completion(.failure(error)) }
                 return
             }
-            // Mirror Android: log every response, regardless of status code.
+            // Log every response, regardless of status code.
             let http = response as? HTTPURLResponse
             let bodyString = data.flatMap { String(data: $0, encoding: .utf8) }
             SampleApiLogger.logResponse(
@@ -369,7 +365,7 @@ class PaymentManager {
     }
 
     /// Returns the EMI code (`debit` / `credit` / `cardless` / "") if the current
-    /// payment mode is EMI and the user has picked a sub-option. Mirrors Android `getEMICode`.
+    /// payment mode is EMI and the user has picked a sub-option.
     func getEMICode() -> String? {
         guard getPaymentModeCode()?.lowercased() == "emi" else { return nil }
         guard let subName = selectedSubPaymentOption?.name.lowercased() else { return nil }
@@ -388,7 +384,7 @@ class PaymentManager {
     }
 
     /// Returns the UPI app code when payment=UPI and sub=intent and the user has
-    /// picked an app from the dedicated UPI app picker. Mirrors Android `getUpiAppCode`.
+    /// picked an app from the dedicated UPI app picker.
     func getUpiAppCode() -> String? {
         guard getPaymentModeCode()?.uppercased() == "UPI" else { return nil }
         guard let subName = selectedSubPaymentOption?.name.lowercased() else { return nil }
@@ -411,8 +407,7 @@ class PaymentManager {
     /// SDK's `PaymentURLBuilder` doesn't append a spurious `&bank_code=` to the
     /// WebView URL when EMI/wallet/UPI is selected.
     ///
-    /// Mirrors Android `getBankCode(bankName, context)` semantics: that helper
-    /// returns "" for unknown names (e.g. "debit card emi"), which the SDK then
+    /// Returns "" for unknown names (e.g. "debit card emi"), which the SDK then
     /// skips because empty values aren't appended.
     func getBankCode() -> String? {
         guard getPaymentModeCode()?.lowercased() == "netbanking" else { return nil }
@@ -427,14 +422,14 @@ class PaymentManager {
     }
 
     /// Returns the wallet code (`freecharge` / `jio_money` / `phonepe`) — but only
-    /// when the parent payment mode is wallet. Mirrors Android `getWalletCode`.
+    /// when the parent payment mode is wallet.
     func getWalletCode() -> String? {
         guard getPaymentModeCode()?.lowercased() == "wallet" else { return nil }
         guard let name = selectedSubPaymentOption?.name.lowercased() else { return nil }
         switch name {
         case "all wallets": return ""
         case "freecharge":  return "freecharge"
-        case "jio money":   return "jio_money"   // Android uses underscore
+        case "jio money":   return "jio_money"
         case "phonepe":     return "phonepe"
         default:            return ""
         }

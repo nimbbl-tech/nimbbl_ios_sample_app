@@ -2,10 +2,8 @@ import Foundation
 
 enum SampleShopAPIUtils {
     private enum URLConstants {
-        // Android sample app alignment (ApiConstants.kt)
         static let nimbblTechUrl = "https://api.nimbbl.tech/"
         // Default QA fallback for sample-app API calls when configured URL is an IP.
-        // Matches Android `ApiConstants.BASE_URL_QA3`.
         static let baseUrlQA3 = "https://qa3api.qa.nimbbl.tech/"
         // Legacy QA1 host kept for prefs migration.
         static let baseUrlQA1 = "https://qa1api.qa.nimbbl.tech/"
@@ -15,14 +13,13 @@ enum SampleShopAPIUtils {
     }
 
     static func getShopUrl(environmentUrl: String?) -> String {
-        // Matches Android sample app flow:
-        // resolveShopBaseUrl() -> resolveShopOrderUrl(apiBaseUrl)
+        // Flow: resolveShopBaseUrl() -> resolveShopOrderUrl(apiBaseUrl)
         let shopBaseUrl = resolveShopBaseUrl(configuredBaseUrl: environmentUrl)
         return resolveShopOrderUrl(apiBaseUrl: shopBaseUrl)
     }
 
     /// Resolves the API base URL the sample app uses for its own /create-shop or
-    /// /api/v3/create-order calls. Mirrors Android `resolveShopBaseUrl()`:
+    /// /api/v3/create-order calls:
     /// IP-based URLs fall back to QA3.
     static func resolveShopBaseUrl(configuredBaseUrl: String?) -> String {
         let trimmed = (configuredBaseUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -41,8 +38,7 @@ enum SampleShopAPIUtils {
     }
 
     /// Resolves the URL passed to `NimbblCheckoutSDK.environmentUrl`. Unlike
-    /// `resolveShopBaseUrl`, this one keeps raw IP hosts as-is — matching Android's
-    /// `sdkEnvUrl` branch in `OrderCreateActivity`. This lets the WebView launch
+    /// `resolveShopBaseUrl`, this one keeps raw IP hosts as-is. This lets the WebView launch
     /// against a local IP while sample-app API calls still hit QA3.
     static func resolveSdkEnvironmentUrl(configuredBaseUrl: String?) -> String {
         let trimmed = (configuredBaseUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)

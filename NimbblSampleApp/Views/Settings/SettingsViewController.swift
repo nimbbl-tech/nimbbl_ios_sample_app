@@ -8,7 +8,7 @@ import nimbbl_mobile_kit_ios_webview_sdk
 
 class SettingsViewController: UIViewController {
     // MARK: - State
-    // Mirrors Android `NimbblConfigActivity.environments` — Prod/Pre-Prod/QA.
+    // Environment options — Prod/Pre-Prod/QA.
     let environments = [Environment.prod.rawValue, Environment.preProd.rawValue, Environment.qa.rawValue]
     let experiences = Experience.allCases.map { $0.rawValue }
     var selectedEnvironment: String = UserDefaults.standard.selectedEnvironment
@@ -143,7 +143,7 @@ class SettingsViewController: UIViewController {
     }
 
     private func setupDebugUnlockGesture() {
-        // 7 taps on the header within 2s unlocks the debug section (matches Android).
+        // 7 taps on the header within 2s unlocks the debug section.
         let tap = UITapGestureRecognizer(target: self, action: #selector(headerTapped))
         tap.numberOfTapsRequired = 1
         headerView.addGestureRecognizer(tap)
@@ -487,7 +487,6 @@ class SettingsViewController: UIViewController {
         present(alert, animated: true)
     }
     @objc func doneTapped() {
-        // Mirrors Android `NimbblConfigActivity.savePreferences()`.
         // Compute the shop base URL from the selected environment.
         let baseUrl: String
         switch selectedEnvironment {
@@ -499,7 +498,7 @@ class SettingsViewController: UIViewController {
         default: baseUrl = EnvironmentUrls.prod
         }
 
-        // Persist all preferences using Android-aligned keys.
+        // Persist all preferences.
         UserDefaults.standard.shopBaseUrl = baseUrl
         UserDefaults.standard.qaEnvironmentUrl = qaUrlTextField.text ?? ""
         UserDefaults.standard.sampleAppMode = selectedExperience
@@ -524,7 +523,7 @@ class SettingsViewController: UIViewController {
         if !newUrl.isEmpty {
             qaUrl = newUrl
         } else {
-            // Default to qa3 (Android `BASE_URL_QA3`) on empty input.
+            // Default to qa3 on empty input.
             qaUrl = EnvironmentUrls.qa
             qaUrlTextField.text = qaUrl
         }

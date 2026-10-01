@@ -115,6 +115,14 @@ pod install
 open YourAppName.xcworkspace
 ```
 
+> ### ⚠️ Create the order on your server — never in the app
+>
+> The `orderToken` you pass to the SDK must be created **server-side** by calling
+> Nimbbl's Create Order API with your **secret API key**, which must never ship in
+> the app. Your backend returns the order token; the app only forwards it to the
+> SDK. *(For convenience this sample creates orders against a demo shop backend —
+> that is **not** the production pattern.)*
+
 ### 2. Import and Initialize
 
 In the view controller from which you want to start checkout:
@@ -129,13 +137,24 @@ class MyViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
 
     func startCheckout(with orderToken: String) {
-        let options = NimbblCheckoutOptions(orderToken: orderToken, paymentModeCode: nil, bankCode: nil, walletCode: nil, paymentFlow: nil)
+        let options = NimbblCheckoutOptions(orderToken: orderToken, paymentModeCode: nil, bankCode: nil, walletCode: nil, paymentFlow: nil, upiAppCode: nil, emiCode: nil)
         NimbblCheckoutSDK.shared.checkout(from: self, options: options)
     }
 
     // MARK: - NimbblCheckoutSDKDelegate
     func onCheckoutResponse(data: [AnyHashable: Any]) {
-        // Handle checkout response (success, failure, cancel, etc.)
+        // The result arrives as an untyped dictionary. Typical fields:
+        let status        = data["status"] as? String ?? "unknown"
+        let orderId       = (data["order_id"] ?? data["nimbbl_order_id"]) as? String
+        let transactionId = (data["transaction_id"] ?? data["nimbbl_transaction_id"]) as? String
+
+        switch status.lowercased() {
+        case "success":          break // payment succeeded — fulfil using orderId/transactionId
+        case "failed", "failure": break // payment failed — show the reason (data["reason"])
+        default:                 break // pending / cancelled — treat as not yet paid
+        }
+        // IMPORTANT: confirm the final status server-side (webhook or order-status
+        // API) before fulfilment — do not trust the client response alone.
     }
 }
 ```

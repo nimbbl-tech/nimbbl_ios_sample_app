@@ -3,7 +3,7 @@ Created by Sandeep Y. on 15/05/26.
 Copyright (c) 2026 Bigital Technologies Pvt. Ltd. All rights reserved.
 
 Bottom-sheet picker for UPI intent apps (gpay / phonepe / paytm).
-Mirrors Android's `spnUpiApps` dropdown, shown when Payment=UPI + Sub=Intent.
+Shown when Payment=UPI + Sub=Intent.
 
 UX: presents a single-column list using the same cell style as
 `SubPaymentOptionsBottomSheetViewController`. Returns the picked

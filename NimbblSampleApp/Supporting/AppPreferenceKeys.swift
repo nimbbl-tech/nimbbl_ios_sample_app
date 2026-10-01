@@ -2,7 +2,6 @@
 Created by Sandeep Y. on 15/05/26.
 Copyright (c) 2026 Bigital Technologies Pvt. Ltd. All rights reserved.
 
-Strictly mirrors Android `tech.nimbbl.exmaple.utils.AppPreferenceKeys`.
 Plus a typed `UserDefaults` accessor extension so the rest of the app reads
 properties instead of stringly-typed `string(forKey:)` calls.
 */
@@ -13,7 +12,7 @@ import Foundation
 
     private override init() { super.init() }
 
-    // MARK: - Key strings (mirror Android exactly)
+    // MARK: - Key strings
     @objc public static let APP_PREFERENCE = "app_configs_prefs"
     @objc public static let SAMPLE_APP_MODE = "sample_app_mode"
     @objc public static let SHOP_BASE_URL = "shop_base_url"

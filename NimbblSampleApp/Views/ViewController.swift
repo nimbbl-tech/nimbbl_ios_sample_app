@@ -58,7 +58,6 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     var subPaymentLabelHeightConstraint: NSLayoutConstraint?
     var subPaymentButtonHeightConstraint: NSLayoutConstraint?
     // UPI app dropdown — third row, shown only when Payment=UPI + Sub=Intent.
-    // Mirrors Android `spnUpiApps` spinner visibility logic.
     var upiAppLabel = UILabel()
     let upiAppButton = UIButton(type: .system)
     var upiAppLabelHeightConstraint: NSLayoutConstraint?
@@ -338,7 +337,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         view.addSubview(subPaymentButton)
         view.bringSubviewToFront(subPaymentButton)
 
-        // UPI app dropdown — shown only when Payment=UPI + Sub=Intent (Android `spnUpiApps`).
+        // UPI app dropdown — shown only when Payment=UPI + Sub=Intent.
         upiAppLabel.text = TextConstants.upiAppTitle
         upiAppLabel.font = UIFont(name: "Gordita-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
         upiAppLabel.textColor = .label
@@ -687,7 +686,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
             subPaymentButton.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
             subPaymentButton.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor),
             // UPI app dropdown — anchored below sub-payment button. Heights collapse to 0
-            // when hidden (Payment != UPI or Sub != Intent), matching Android `spnUpiApps`.
+            // when hidden (Payment != UPI or Sub != Intent).
             upiAppLabel.topAnchor.constraint(equalTo: subPaymentButton.bottomAnchor, constant: 16),
             upiAppLabel.leadingAnchor.constraint(equalTo: paymentCustomisationView.leadingAnchor),
             upiAppLabel.trailingAnchor.constraint(equalTo: paymentCustomisationView.trailingAnchor),
@@ -870,7 +869,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
             }
             self.updateSubPaymentButtonUI()
             // Re-evaluate UPI app row visibility — shows the dropdown on the main screen
-            // when Payment=UPI + Sub=Intent (Android `spnUpiApps` parity).
+            // when Payment=UPI + Sub=Intent.
             self.updateUpiAppUI()
         }
         present(bottomSheet, animated: true)
@@ -924,7 +923,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         let env = UserDefaults.standard.selectedEnvironment
         var configuredBaseUrl: String? = nil
         if env == Environment.qa.rawValue {
-            // Use the user-edited QA URL, falling back to qa3 (Android BASE_URL_QA3).
+            // Use the user-edited QA URL, falling back to qa3.
             configuredBaseUrl = UserDefaults.standard.qaEnvironmentUrl
             if configuredBaseUrl?.isEmpty != false { configuredBaseUrl = EnvironmentUrls.qa }
         } else {
@@ -935,7 +934,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
             }
         }
 
-        // 2. SDK env URL — keeps raw IP for WebView (Android `sdkEnvUrl` branch).
+        // 2. SDK env URL — keeps raw IP for WebView.
         let sdkEnvUrl = SampleShopAPIUtils.resolveSdkEnvironmentUrl(configuredBaseUrl: configuredBaseUrl)
         NimbblCheckoutSDK.shared.environmentUrl = sdkEnvUrl
 
@@ -980,22 +979,14 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 let paymentFlow: String? = (paymentModeCode == "UPI")
                     ? self?.paymentManager.getPaymentFlow(upiModeName: self?.paymentManager.selectedSubPaymentOption?.name ?? "")
                     : nil
-                // UPI intent app code (mirrors Android `getUpiAppCode`) — only when payment=UPI + sub=intent.
+                // UPI intent app code — only when payment=UPI + sub=intent.
                 let upiAppCode = self?.paymentManager.selectedUpiApp?.code
-                // EMI code (mirrors Android `getEMICode`) — only when payment=EMI.
+                // EMI code — only when payment=EMI.
                 let emiCode = self?.paymentManager.selectedEmiOption?.code
                 let options = NimbblCheckoutOptions(
-                    packageName: nil,
-                    amount: 0,
-                    currency: self?.paymentManager.selectedCurrency,
-                    name: nil,
-                    description: nil,
-                    image: nil,
-                    userInfo: nil,
-                    subMerchantId: nil,
                     orderToken: token,
                     paymentModeCode: paymentModeCode,
-                    // bankCode / walletCode are filtered per-payment-mode (mirror Android):
+                    // bankCode / walletCode are filtered per-payment-mode:
                     // - bankCode is non-nil only when payment=netbanking
                     // - walletCode is non-nil only when payment=wallet
                     // Otherwise nil, so the SDK URL builder won't append spurious params
@@ -1037,22 +1028,20 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
         }
     }
 
-    // MARK: - Core API v3 path (mirrors Android `createOrderV3Request`)
+    // MARK: - Core API v3 path
     /**
      * When the user has configured an access token in Settings, the sample app
      * calls Core API v3 `/api/v3/create-order` directly (Bearer-authenticated)
      * instead of the shop-proxy /create-shop endpoint.
-     *
-     * Strictly mirrors Android's branch in `OrderCreateActivity.setListeners()`.
      */
     private func createOrderViaV3(configuredBaseUrl: String, accessToken: String) {
         // The v3 endpoint must hit a public Nimbbl host even when WebView env is an IP.
-        // `resolveShopBaseUrl` does the IP→qa3 fallback that matches Android exactly.
+        // `resolveShopBaseUrl` does the IP→qa3 fallback.
         let apiBaseUrl = SampleShopAPIUtils.resolveShopBaseUrl(configuredBaseUrl: configuredBaseUrl)
 
         // Pull the same inputs the shop-proxy path uses.
         let amountStr = (paymentManager.amountValue as NSString).floatValue
-        let totalAmount = Int(amountStr) // matches Android: Integer.parseInt(amount.text)
+        let totalAmount = Int(amountStr)
         let firstName = paymentManager.userName
         let email = paymentManager.userEmail
         let mobile = paymentManager.userNumber
@@ -1085,17 +1074,9 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 let upiAppCode = self?.paymentManager.getUpiAppCode()
                 let emiCode = self?.paymentManager.getEMICode()
                 let options = NimbblCheckoutOptions(
-                    packageName: nil,
-                    amount: 0,
-                    currency: self?.paymentManager.selectedCurrency,
-                    name: nil,
-                    description: nil,
-                    image: nil,
-                    userInfo: nil,
-                    subMerchantId: nil,
                     orderToken: v3.token,
                     paymentModeCode: paymentModeCode,
-                    // bankCode / walletCode are filtered per-payment-mode (mirror Android):
+                    // bankCode / walletCode are filtered per-payment-mode:
                     // - bankCode is non-nil only when payment=netbanking
                     // - walletCode is non-nil only when payment=wallet
                     // Otherwise nil, so the SDK URL builder won't append spurious params
@@ -1119,7 +1100,7 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
                 switch error {
                 case .invalidURL(let url): message = "Invalid v3 URL: \(url)"
                 case .http(let status, let body):
-                    // Try to parse Nimbbl error envelope, matching Android.
+                    // Try to parse Nimbbl error envelope.
                     if let bodyStr = body,
                        let bodyData = bodyStr.data(using: .utf8),
                        let json = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any],
@@ -1205,7 +1186,6 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     }
 
     /// Show/hide the UPI app dropdown based on Payment=UPI + Sub=Intent.
-    /// Mirrors Android `spnUpiApps` spinner visibility logic.
     func updateUpiAppUI() {
         let paymentName = selectedPaymentOption?.name.lowercased() ?? ""
         let subName = selectedSubPaymentOption?.name.lowercased() ?? ""
@@ -1496,7 +1476,31 @@ class ViewController: UIViewController, NimbblCheckoutSDKDelegate {
     // MARK: - NimbblCheckoutSDKDelegate
     func onCheckoutResponse(data: [AnyHashable: Any]) {
         DebugLog.log("[SAMPLE APP] Checkout response received: \(data)")
-        
+
+        // Reading the checkout result.
+        // The SDK delivers the outcome as an untyped [AnyHashable: Any].
+        // These are the fields a merchant typically acts on:
+        let status        = data["status"] as? String ?? "unknown"
+        let orderId       = (data["order_id"] ?? data["nimbbl_order_id"]) as? String
+        // transaction_id arrives under one of a few keys depending on the flow:
+        let transactionId = (data["transaction_id"]
+                             ?? data["nimbbl_transaction_id"]
+                             ?? data["pspTransactionId"]) as? String
+        let reason        = (data["message"] ?? data["reason"]) as? String
+
+        switch status.lowercased() {
+        case "success":
+            // Payment succeeded — fulfil the order using orderId / transactionId.
+            DebugLog.log("[SAMPLE APP] Payment SUCCESS — order=\(orderId ?? "-"), txn=\(transactionId ?? "-")")
+        case "failed", "failure":
+            DebugLog.log("[SAMPLE APP] Payment FAILED — \(reason ?? "no reason")")
+        default:
+            // pending / cancelled / unknown — treat as not-yet-paid.
+            DebugLog.log("[SAMPLE APP] Payment \(status) — confirm the final state via your server")
+        }
+        // IMPORTANT: never grant fulfilment on the client response alone — always
+        // verify the final payment status server-side (webhook or order-status API)
+        // before shipping goods or crediting the customer.
 
         // Dismiss any presented view controllers (e.g., checkout webview)
         if let presented = self.presentedViewController {

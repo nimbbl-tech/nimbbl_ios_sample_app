@@ -20,7 +20,7 @@ enum HeaderOption: String, CaseIterable {
 }
 
 // MARK: - Environment Enum
-// Matches Android AppConstants ENVIRONMENT_* values exactly: Prod / Pre-Prod / QA.
+// Environment values: Prod / Pre-Prod / QA.
 // (Legacy `qa1` / `qa2` aliases preserved for back-compat but not shown in the picker.)
 enum Environment: String, CaseIterable {
     case prod = "Prod"
@@ -53,7 +53,7 @@ enum Environment: String, CaseIterable {
 // MARK: - Experience Enum
 enum Experience: String, CaseIterable {
     case native = "Native"
-    case webView = "Webview"   // matches Android AppConstants.EXPERIENCE_WEBVIEW
+    case webView = "Webview"
 
     var displayName: String {
         switch self {
@@ -69,7 +69,7 @@ enum PaymentMode: String, CaseIterable {
     case netbanking = "netbanking"
     case wallet = "wallet"
     case card = "card"
-    case emi = "emi"          // new — matches Android AppConstants string "emi"
+    case emi = "emi"          // new
     case all = "all"
 
     var displayName: String {
