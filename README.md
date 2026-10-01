@@ -1,6 +1,6 @@
 # Nimbbl iOS Sample App
 
-A complete sample iOS application demonstrating the integration of Nimbbl payment services using the published WebView SDK (available via CocoaPods and Swift Package Manager). This sample app showcases payment integration, modern UI, and best practices for iOS development.
+A complete sample iOS application demonstrating the integration of Nimbbl payment services using the published WebView SDK via Swift Package Manager (also available on CocoaPods). This sample app showcases payment integration, modern UI, and best practices for iOS development.
 
 ## 📱 Overview
 
@@ -31,11 +31,11 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - ✅ Settings management
 
 ### Technical Features
-- ✅ Integration with WebView SDK v2.0.17 (published)
+- ✅ Integration with WebView SDK 2.1.0-alpha.4 (published)
 - ✅ Enhanced delegate-based callbacks
 - ✅ Standardized error handling and logging
 - ✅ Production-ready configuration
-- ✅ Published SDKs from CocoaPods
+- ✅ Published SDK via Swift Package Manager
 - ✅ Enhanced security and data handling
 
 ## 📋 Requirements
@@ -43,76 +43,54 @@ This sample app showcases how to integrate Nimbbl payment services into your iOS
 - **iOS**: 15.0+
 - **Xcode**: 15.0+ (built against the iOS 27 SDK)
 - **Swift**: 5.0+
-- **CocoaPods**: Latest version (this sample integrates via CocoaPods; the SDK is also available via Swift Package Manager)
+- **Swift Package Manager** (bundled with Xcode — no extra tooling)
 
-## 📦 SDK Versions
+## 📦 SDK Version
 
-This sample integrates the Nimbbl **WebView SDK** (Core API SDK is pulled in
-automatically).
-
-- **2.1.0 and later** — available via **Swift Package Manager only**.
-- **CocoaPods** — continues to serve the existing **2.0.x** releases (the sample's
-  `Podfile` references the latest published 2.0.x). CocoaPods Trunk goes read-only
-  on **2 Dec 2026**.
-
-To try 2.1.0+, add the package via SPM (see below); to change the CocoaPods
-version, edit the `Podfile` and run `pod install`.
+This sample integrates the Nimbbl **WebView SDK** at **2.1.0-alpha.4** via **Swift
+Package Manager**; the **Core API SDK** is pulled in automatically as a transitive
+dependency. The SDK is also published on the **CocoaPods trunk** if you prefer Pods
+(CocoaPods Trunk goes read-only on **2 Dec 2026**).
 
 ## 🏁 Getting started
 
 ```bash
 git clone https://github.com/nimbbl-tech/nimbbl_ios_sample_app.git
 cd nimbbl_ios_sample_app
-pod install
-open NimbblSampleApp.xcworkspace
+open NimbblSampleApp.xcodeproj
 ```
 
-Select the **NimbblSampleApp** scheme and run (⌘R). The `Podfile` pulls the SDK as
-a binary pod by git tag (trunk-independent). For local development against the pod
-repos, set `USE_LOCAL_POD_REPOS = true` in the `Podfile`.
+Xcode resolves the Swift Package automatically on open — **no `pod install`, no
+workspace**. Select the **NimbblSampleApp** scheme and run (⌘R).
 
-> The `…_pod` repos must be tagged for the release version to resolve. Until a tag
-> is published, use the local toggle (`USE_LOCAL_POD_REPOS = true`).
-
-> Prefer Swift Package Manager? The SDK is also distributed via SPM — see the
-> WebView SDK's own README for adding it to your app. This sample integrates via
-> CocoaPods.
+> If packages don't resolve, use **File ▸ Packages ▸ Resolve Package Versions**.
 
 ## 🔧 Integrating the WebView SDK in Your App
 
 Below is a minimal end‑to‑end example of how to add and use the `nimbbl_mobile_kit_ios_webview_sdk` in your own iOS app.
 
-### 1. Add the SDK
+### 1. Add the SDK (Swift Package Manager)
 
-The WebView SDK is available via both Swift Package Manager and CocoaPods. The
-Core API SDK is pulled in automatically — you do not add it yourself.
-
-**Swift Package Manager** — in Xcode, **File ▸ Add Package Dependencies…**:
+In Xcode, **File ▸ Add Package Dependencies…**, enter the package URL and pin an
+exact version (e.g. `2.1.0-alpha.4`):
 
 ```
 https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_pod.git
 ```
 
-Add the `nimbbl_mobile_kit_ios_webview_sdk` library to your app target.
+Add the **`nimbbl_mobile_kit_ios_webview_sdk`** library to your app target. The
+Core API SDK is pulled in automatically — you do not add it yourself.
 
-**CocoaPods (legacy — 2.0.x only)** — 2.1.0+ is SPM-only; CocoaPods continues to
-serve existing 2.0.x releases (Trunk goes read-only on 2 Dec 2026). In your app’s
-`Podfile`:
+**Prefer CocoaPods?** The SDK is also on the trunk — add only the WebView pod and
+Core resolves transitively:
 
 ```ruby
 platform :ios, '15.0'
 use_frameworks!
 
 target 'YourAppName' do
-  pod 'nimbbl_mobile_kit_ios_webview_sdk', '~> 2.0.17'
+  pod 'nimbbl_mobile_kit_ios_webview_sdk', '2.1.0-alpha.4'
 end
-```
-
-Then run:
-
-```bash
-pod install
-open YourAppName.xcworkspace
 ```
 
 > ### ⚠️ Create the order on your server — never in the app

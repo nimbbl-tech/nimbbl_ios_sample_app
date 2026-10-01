@@ -1,0 +1,24 @@
+{
+  "originHash" : "d856d89a90399d6d3ee63e19870784b4d7b040fd64df62abb39f176503af1749",
+  "pins" : [
+    {
+      "identity" : "nimbbl_mobile_kit_ios_core_api_pod",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_pod.git",
+      "state" : {
+        "revision" : "92addb80b688b321fd628692d8173715b3b7712d",
+        "version" : "2.1.0-alpha.4"
+      }
+    },
+    {
+      "identity" : "nimbbl_mobile_kit_ios_webview_pod",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_pod.git",
+      "state" : {
+        "revision" : "de028ecb564d4cf71063ee37799250db2740ec77",
+        "version" : "2.1.0-alpha.4"
+      }
+    }
+  ],
+  "version" : 3
+}
