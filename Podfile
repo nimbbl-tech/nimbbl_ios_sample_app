@@ -2,27 +2,23 @@ platform :ios, '15.0'
 
 # This Podfile integrates the NimbblSampleApp target.
 #
-# 2.1.0+ is not on the CocoaPods trunk (SPM-only there), so the SDK is consumed as
-# a binary pod referenced directly from its public "pod" repo by git tag — this is
-# trunk-independent and keeps working after the CocoaPods trunk read-only deadline.
-#
-# For local development against the pod repos, flip USE_LOCAL_POD_REPOS to true.
+# The SDK is published on the CocoaPods trunk, so it's consumed the standard way:
+# add only the WebView pod and the Core API SDK resolves transitively. For local
+# development against the pod repos, flip USE_LOCAL_POD_REPOS to true.
 USE_LOCAL_POD_REPOS = false
+NIMBBL_SDK_VERSION  = '2.1.0-alpha.4'
 
 target 'NimbblSampleApp' do
   use_frameworks!
 
   if USE_LOCAL_POD_REPOS
-    # Local binary pod repos
+    # Local binary pod repos (Core must be given explicitly for the local path).
     pod 'nimbbl_mobile_kit_ios_core_api_sdk', :path => '../../client-sdks/nimbbl_mobile_kit_ios_core_api_pod'
     pod 'nimbbl_mobile_kit_ios_webview_sdk',  :path => '../../client-sdks/nimbbl_mobile_kit_ios_webview_pod'
   else
-    # Release: binary pods by git tag. Core must be given explicitly since the
-    # WebView podspec depends on it and it is not on the trunk. Core and WebView
-    # version independently — set each tag to the version it actually published
-    # (Core's tag must match the version WebView was built against).
-    pod 'nimbbl_mobile_kit_ios_core_api_sdk', :git => 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_core_api_pod.git', :tag => '2.1.0-alpha.1'
-    pod 'nimbbl_mobile_kit_ios_webview_sdk',  :git => 'https://github.com/nimbbl-tech/nimbbl_mobile_kit_ios_webview_pod.git',  :tag => '2.1.0-alpha.1'
+    # Published on the CocoaPods trunk — add only WebView; Core resolves
+    # transitively from its podspec dependency.
+    pod 'nimbbl_mobile_kit_ios_webview_sdk', NIMBBL_SDK_VERSION
   end
 end
 
